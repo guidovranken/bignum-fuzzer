@@ -1,0 +1,8 @@
+[package]
+
+name = "rust_bignum_fuzzer"
+version = "0.0.1"
+authors = [ "Guido Vranken <guidovranken@gmail.com>" ]
+
+[dependencies]
+num = "0.1" 
