@@ -44,66 +44,171 @@ func go_bignum_destroy_bignum(bn_index int) {
 }
 
 //export go_bignum_operation
-func go_bignum_operation(op int, A int, B int, C int, D int, _opt int) int {
-    if ( op == BN_FUZZ_OP_ADD ) {
+
+func op_ADD(A int, B int, C int, D int, direct bool) int {
+    if direct {
         g_nums[A].Add(g_nums[B], g_nums[C])
-        return 0
-    } else if op == BN_FUZZ_OP_SUB {
+    } else {
+        tmp := big.NewInt(0)
+        tmp.Add(g_nums[B], g_nums[C])
+        g_nums[A] = tmp
+    }
+    return 0
+}
+
+func op_SUB(A int, B int, C int, D int, direct bool) int {
+    if direct {
         g_nums[A].Sub(g_nums[B], g_nums[C])
-        return 0
-    } else if op == BN_FUZZ_OP_MUL {
+    } else {
+        tmp := big.NewInt(0)
+        tmp.Sub(g_nums[B], g_nums[C])
+        g_nums[A] = tmp
+    }
+    return 0
+}
+
+func op_MUL(A int, B int, C int, D int, direct bool) int {
+    if direct {
         g_nums[A].Mul(g_nums[B], g_nums[C])
-        return 0
-    } else if op == BN_FUZZ_OP_DIV {
-        return -1
-    } else if op == BN_FUZZ_OP_MOD {
-        if g_nums[B].Cmp(big.NewInt(0)) >= 0 && g_nums[C].Cmp(big.NewInt(0)) > 0 {
-            g_nums[A].Mod(g_nums[B], g_nums[C])
-            return 0
+    } else {
+        tmp := big.NewInt(0)
+        tmp.Mul(g_nums[B], g_nums[C])
+        g_nums[A] = tmp
+    }
+    return 0
+}
+
+func op_DIV(A int, B int, C int, D int, direct bool) int {
+    if ( g_nums[C].Cmp(big.NewInt(0)) != 0 ) {
+        if direct {
+            g_nums[A].Div(g_nums[B], g_nums[C])
         } else {
-            return -1
+            tmp := big.NewInt(0)
+            tmp.Div(g_nums[B], g_nums[C])
+            g_nums[A] = tmp
         }
-    } else if op == BN_FUZZ_OP_EXP_MOD {
-        if g_nums[B].Cmp(big.NewInt(0)) > 0 && g_nums[C].Cmp(big.NewInt(0)) >= 0 && g_nums[D].Cmp(big.NewInt(0)) != 0 {
+    } else {
+        return -1
+    }
+    return 0
+}
+
+func op_MOD(A int, B int, C int, D int, direct bool) int {
+    if g_nums[B].Cmp(big.NewInt(0)) >= 0 && g_nums[C].Cmp(big.NewInt(0)) > 0 {
+        if direct {
+            g_nums[A].Mod(g_nums[B], g_nums[C])
+        } else {
+            tmp := big.NewInt(0)
+            tmp.Mod(g_nums[B], g_nums[C])
+            g_nums[A] = tmp
+        }
+        return 0
+    } else {
+        return -1
+    }
+}
+
+func op_EXP_MOD(A int, B int, C int, D int, direct bool) int {
+    if g_nums[B].Cmp(big.NewInt(0)) > 0 && g_nums[C].Cmp(big.NewInt(0)) >= 0 && g_nums[D].Cmp(big.NewInt(0)) != 0 {
+        if direct {
+            g_nums[A].Exp(g_nums[B], g_nums[C], g_nums[D])
+        } else {
             tmp := big.NewInt(0)
             tmp.Exp(g_nums[B], g_nums[C], g_nums[D])
             g_nums[A] = tmp
-            return 0
-        } else {
-            return -1
         }
-    } else if op == BN_FUZZ_OP_LSHIFT {
-        g_nums[A].Lsh(g_nums[B], 1)
         return 0
-    } else if op == BN_FUZZ_OP_RSHIFT {
+    } else {
         return -1
-    } else if op == BN_FUZZ_OP_GCD {
-        if g_nums[B].Cmp(big.NewInt(0)) > 0 && g_nums[C].Cmp(big.NewInt(0)) > 0 {
-            g_nums[A].GCD(nil, nil, g_nums[B], g_nums[C])
-            return 0
-        } else {
-            return -1
-        }
-    } else if op == BN_FUZZ_OP_GCD {
-        return -1
-    } else if op == BN_FUZZ_OP_EXP {
-        return 0
-    } else if op == BN_FUZZ_OP_CMP {
-        res := g_nums[B].Cmp(g_nums[C])
-        if res > 0 {
-            g_nums[A] = big.NewInt(1)
-        } else {
-            if res == 0 {
-                g_nums[A] = big.NewInt(0)
-            } else {
-                g_nums[A] = big.NewInt(-1)
-            }
-        }
-        return 0
-    } else if op == BN_FUZZ_OP_SQR {
-        g_nums[A].Exp(g_nums[B], big.NewInt(2), nil)
-        return 0;
     }
+}
+
+func op_LSHIFT(A int, B int, C int, D int, direct bool) int {
+    if direct {
+        g_nums[A].Lsh(g_nums[B], 1)
+    } else {
+        tmp := big.NewInt(0)
+        tmp.Lsh(g_nums[B], 1)
+        g_nums[A] = tmp
+    }
+    return 0
+}
+
+func op_GCD(A int, B int, C int, D int, direct bool) int {
+    if g_nums[B].Cmp(big.NewInt(0)) > 0 && g_nums[C].Cmp(big.NewInt(0)) > 0 {
+        if direct {
+            g_nums[A].GCD(nil, nil, g_nums[B], g_nums[C])
+        } else {
+            tmp := big.NewInt(0)
+            tmp.GCD(nil, nil, g_nums[B], g_nums[C])
+            g_nums[A] = tmp
+        }
+        return 0
+    } else {
+        return -1
+    }
+}
+
+func op_EXP(A int, B int, C int, D int, direct bool) int {
+    thousand := big.NewInt(1000)
+    if g_nums[B].Cmp(thousand) < 0 && g_nums[C].Cmp(thousand) < 0 {
+        if direct {
+            g_nums[A].Exp(g_nums[B], g_nums[C], nil)
+            return 0
+        } else {
+            tmp := big.NewInt(0)
+            tmp.Exp(g_nums[B], g_nums[C], nil)
+            g_nums[A] = tmp
+            return 0
+        }
+    } else {
+        return -1
+    }
+}
+
+
+func op_CMP(A int, B int, C int, D int, _direct bool) int {
+    res := g_nums[B].Cmp(g_nums[C])
+    if res > 0 {
+        g_nums[A] = big.NewInt(1)
+    } else {
+        if res == 0 {
+            g_nums[A] = big.NewInt(0)
+        } else {
+            g_nums[A] = big.NewInt(-1)
+        }
+    }
+    return 0
+}
+
+func op_SQR(A int, B int, C int, D int, direct bool) int {
+    if direct {
+        g_nums[A].Exp(g_nums[B], big.NewInt(2), nil)
+    } else {
+        tmp := big.NewInt(0)
+        tmp.Exp(g_nums[B], big.NewInt(2), nil)
+        g_nums[A] = tmp
+    }
+    return 0
+}
+//export go_bignum_operation
+func go_bignum_operation(op int, A int, B int, C int, D int, opt int) int {
+    direct := false
+    if opt & 1 == 1 {
+        direct = true
+    }
+    if ( op == BN_FUZZ_OP_ADD ) { return op_ADD(A, B, C, D, direct) } else if
+    op == BN_FUZZ_OP_SUB { return op_SUB(A, B, C, D, direct) } else if
+    op == BN_FUZZ_OP_MUL { return op_MUL(A, B, C, D, direct) } else if
+    op == BN_FUZZ_OP_DIV { return op_DIV(A, B, C, D, direct) } else if
+    op == BN_FUZZ_OP_MOD { return op_MOD(A, B, C, D, direct) } else if
+    op == BN_FUZZ_OP_EXP_MOD { /* TODO */ return -1 } else if
+    op == BN_FUZZ_OP_LSHIFT { return op_LSHIFT(A, B, C, D, direct) } else if
+    op == BN_FUZZ_OP_RSHIFT { return -1 } else if
+    op == BN_FUZZ_OP_GCD { return op_GCD(A, B, C, D, direct) } else if
+    op == BN_FUZZ_OP_EXP { return op_EXP(A, B, C, D, direct); } else if
+    op == BN_FUZZ_OP_CMP { return op_CMP(A, B, C, D, direct) } else if
+    op == BN_FUZZ_OP_SQR { return op_SQR(A, B, C, D, direct) }
 
     return -1
 }
