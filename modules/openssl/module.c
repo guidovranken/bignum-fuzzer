@@ -9,7 +9,7 @@
 #include <bndiff/bignum.h>
 
 static BN_CTX *ctx = NULL;
-BIGNUM *zero = NULL, *minone = NULL, *ten = NULL;
+BIGNUM *zero = NULL, *minone = NULL, *ten = NULL, *thousand = NULL;
 
 static int initialize(void)
 {
@@ -23,6 +23,8 @@ static int initialize(void)
     BN_set_negative(minone, 1);
     ten = BN_new();
     BN_set_word(ten, 10);
+    thousand = BN_new();
+    BN_set_word(thousand, 1000);
     return 0;
 }
 
@@ -104,7 +106,16 @@ static int operation(
             ret = BN_mul(A, B, C, ctx) == 0 ? -1 : 0;
             break;
         case    BN_FUZZ_OP_DIV:
-            return -1;
+            if ( BN_cmp(C, zero) != 0 ) {
+                BIGNUM* rem = BN_new();
+                ret = BN_div(A, rem, B, C, ctx) == 0 ? -1 : 0;
+                if ( ret == 0 ) {
+                    ret = BN_cmp(rem, zero) == 0 ? 0 : -1;
+                }
+                BN_free(rem);
+            } else {
+                ret = -1;
+            }
             break;
         case    BN_FUZZ_OP_MOD:
             ret = BN_mod(A, B, C, ctx) == 0 ? -1 : 0;
@@ -132,7 +143,11 @@ static int operation(
             ret = BN_mod_add(A, B, C, D, ctx) == 0 ? -1 : 0;
             break;
         case    BN_FUZZ_OP_EXP:
-            ret = -1;
+            if ( BN_ucmp(B, thousand) <= 0 && BN_ucmp(C, thousand) <= 0 ) {
+                ret = BN_exp(A, B, C, ctx) == 0 ? -1 : 0;
+            } else {
+                ret = -1;
+            }
             break;
         case    BN_FUZZ_OP_CMP:
             {
@@ -167,6 +182,8 @@ static void shutdown(void)
     minone = NULL;
     BN_free(ten);
     ten = NULL;
+    BN_free(thousand);
+    thousand = NULL;
 }
 
 module_t mod_openssl = {
