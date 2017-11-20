@@ -1,14 +1,16 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <stdint.h>
 #include <bndiff/module.h>
 #include <bndiff/operation.h>
 #include <bndiff/bignum.h>
 
 void rust_bignum_initialize(void);
 void rust_bignum_bignum_from_string(const char* s, int bn_index);
-void rust_bignum_string_from_bignum(int bn_index);
-int rust_bignum_operation(int op);
+char* rust_bignum_string_from_bignum(int bn_index);
+void rust_bignum_free_string(char* s);
+int rust_bignum_operation(int op, int opt);
 void rust_bignum_shutdown(void);
 
 static int numbers[NUM_BIGNUMS];
@@ -17,6 +19,11 @@ static int g_number_index;
 
 static int initialize(void)
 {
+    int i;
+    for (i = 0; i < NUM_BIGNUMS; i++) {
+        numbers[i] = i;
+    }
+    g_number_index = 0;
     rust_bignum_initialize();
     return 0;
 }
@@ -31,7 +38,11 @@ static int bignum_from_string(const char* input, void** output)
 
 static int string_from_bignum(void* input, char** output)
 {
-    //*output = go_bignum_string_from_bignum((GoInt)*(int*)input);
+    char* tmp = rust_bignum_string_from_bignum(*(int*)input);
+    size_t len = strlen(tmp)+1;
+    *output = malloc(len);
+    memcpy(*output, tmp, len);
+    rust_bignum_free_string(tmp);
     return 0;
 }
 
@@ -42,9 +53,10 @@ static void destroy_bignum(void* bignum)
 
 static int operation(
         bignum_cluster_t* bignum_cluster,
-        operation_t operation)
+        operation_t operation,
+        uint8_t opt)
 {
-    return (int)rust_bignum_operation((int)operation);
+    return (int)rust_bignum_operation((int)operation, (int)opt);
 }
 
 static void shutdown(void) {

@@ -6,3 +6,4 @@ authors = [ "Guido Vranken <guidovranken@gmail.com>" ]
 
 [dependencies]
 num = "0.1" 
+lazy_static = "0.2"
