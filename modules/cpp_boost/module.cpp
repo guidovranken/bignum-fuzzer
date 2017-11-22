@@ -76,11 +76,11 @@ static int operation(
             break;
         case    BN_FUZZ_OP_DIV:
             {
-                if ( *C > cpp_int(0) ) {
+                if ( *C != cpp_int(0) ) {
                     cpp_int rem(0);
                     divide_qr(*B, *C, *A, rem);
-                    if ( *A == cpp_int(-1) ) {
-                        *A = cpp_int(0);
+                    if ( rem != 0 ) {
+                        ret = -1;
                     }
                 } else {
                     ret = -1;
