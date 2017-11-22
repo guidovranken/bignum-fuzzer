@@ -164,6 +164,9 @@ static int operation(
         case    BN_FUZZ_OP_SQR:
             ret = BN_sqr(A, B, ctx) == 0 ? -1 : 0;
             break;
+        case    BN_FUZZ_OP_NEG:
+            ret = BN_sub(A, zero, B) == 0 ? -1 : 0;
+            break;
         default:
             ret = -1;
     }

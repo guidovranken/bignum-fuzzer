@@ -19,6 +19,7 @@ const (
     BN_FUZZ_OP_EXP = 11
     BN_FUZZ_OP_CMP = 12
     BN_FUZZ_OP_SQR = 13
+    BN_FUZZ_OP_NEG = 14
 )
 var g_nums = make([]*big.Int, 4)
 
@@ -191,6 +192,17 @@ func op_SQR(A int, B int, C int, D int, direct bool) int {
     }
     return 0
 }
+
+func op_NEG(A int, B int, C int, D int, direct bool) int {
+    if direct {
+        g_nums[A].Neg(g_nums[B])
+    } else {
+        tmp := big.NewInt(0)
+        tmp.Neg(g_nums[B])
+        g_nums[A] = tmp
+    }
+    return 0
+}
 //export go_bignum_operation
 func go_bignum_operation(op int, A int, B int, C int, D int, opt int) int {
     direct := false
@@ -208,7 +220,8 @@ func go_bignum_operation(op int, A int, B int, C int, D int, opt int) int {
     op == BN_FUZZ_OP_GCD { return op_GCD(A, B, C, D, direct) } else if
     op == BN_FUZZ_OP_EXP { return op_EXP(A, B, C, D, direct); } else if
     op == BN_FUZZ_OP_CMP { return op_CMP(A, B, C, D, direct) } else if
-    op == BN_FUZZ_OP_SQR { return op_SQR(A, B, C, D, direct) }
+    op == BN_FUZZ_OP_SQR { return op_SQR(A, B, C, D, direct) } else if
+    op == BN_FUZZ_OP_NEG { return op_NEG(A, B, C, D, direct) }
 
     return -1
 }

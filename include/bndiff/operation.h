@@ -19,6 +19,7 @@ enum operation
     BN_FUZZ_OP_EXP = 11,
     BN_FUZZ_OP_CMP = 12,
     BN_FUZZ_OP_SQR = 13,
+    BN_FUZZ_OP_NEG = 14,
 };
 
 typedef uint8_t operation_t;

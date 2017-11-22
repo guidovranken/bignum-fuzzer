@@ -9,7 +9,7 @@ use std::ptr::{null};
 use std::sync::Mutex;
 use std::ffi::CStr;
 use std::ffi::CString;
-use std::ops::{Add, Sub, Mul, Div, Rem, Shl};
+use std::ops::{Add, Sub, Mul, Div, Rem, Shl, Neg};
 use std::cmp::Ordering;
 use num::ToPrimitive;
 lazy_static! {
@@ -190,6 +190,10 @@ pub extern fn rust_bignum_operation(op: c_int, _opt: c_int) -> c_int {
             } else {
                 *(NUM1.lock().unwrap()) = BigInt::from_str_radix("-1", 10).unwrap();
             }
+            ret = 0;
+        }
+        14 => { /* BN_FUZZ_OP_NEG = 14 */
+            *(NUM1.lock().unwrap()) = num2.neg().clone();
             ret = 0;
         }
         _ => {

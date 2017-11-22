@@ -138,6 +138,10 @@ static int operation(
             multiply(*A, *B, *B);
             ret = 0;
             break;
+        case    BN_FUZZ_OP_NEG:
+            *A = cpp_int(0) - *B;
+            ret = 0;
+            break;
         default:
             ret = -1;
     }
