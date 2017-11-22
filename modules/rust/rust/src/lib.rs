@@ -11,6 +11,7 @@ use std::ffi::CStr;
 use std::ffi::CString;
 use std::ops::{Add, Sub, Mul, Div, Rem, Shl};
 use std::cmp::Ordering;
+use num::ToPrimitive;
 lazy_static! {
     static ref NUM1: Mutex<BigInt> = Mutex::new(BigInt::from_str_radix("0", 10).unwrap());
     static ref NUM2: Mutex<BigInt> = Mutex::new(BigInt::from_str_radix("0", 10).unwrap());
@@ -173,7 +174,13 @@ pub extern fn rust_bignum_operation(op: c_int, _opt: c_int) -> c_int {
             }
         }
         11 => { /* BN_FUZZ_OP_EXP = 11 */
-            ret = -1
+            if num2 >= BigInt::zero() && num2 <= BigInt::from_str_radix("1000", 10).unwrap() && num3 <= BigInt::from_str_radix("1000", 10).unwrap() && num3 >= BigInt::zero() {
+                let exp = num3.to_usize().unwrap();
+                *(NUM1.lock().unwrap()) = pow(num2, exp);
+
+            } else {
+                ret = -1
+            }
         }
         12 => { /* BN_FUZZ_OP_CMP = 12 */
             if num2 > num3 {
