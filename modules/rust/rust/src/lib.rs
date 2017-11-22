@@ -12,6 +12,7 @@ use std::ffi::CString;
 use std::ops::{Add, Sub, Mul, Div, Rem, Shl, Neg};
 use std::cmp::Ordering;
 use num::ToPrimitive;
+use num::Signed;
 lazy_static! {
     static ref NUM1: Mutex<BigInt> = Mutex::new(BigInt::from_str_radix("0", 10).unwrap());
     static ref NUM2: Mutex<BigInt> = Mutex::new(BigInt::from_str_radix("0", 10).unwrap());
@@ -194,6 +195,10 @@ pub extern fn rust_bignum_operation(op: c_int, _opt: c_int) -> c_int {
         }
         14 => { /* BN_FUZZ_OP_NEG = 14 */
             *(NUM1.lock().unwrap()) = num2.neg().clone();
+            ret = 0;
+        }
+        15 => { /* BN_FUZZ_OP_ABS = 15 */
+            *(NUM1.lock().unwrap()) = num2.abs().clone();
             ret = 0;
         }
         _ => {

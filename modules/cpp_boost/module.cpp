@@ -142,6 +142,10 @@ static int operation(
             *A = cpp_int(0) - *B;
             ret = 0;
             break;
+        case    BN_FUZZ_OP_ABS:
+            *A = abs(*B);
+            ret = 0;
+            break;
         default:
             ret = -1;
     }

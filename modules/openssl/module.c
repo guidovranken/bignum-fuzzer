@@ -167,6 +167,20 @@ static int operation(
         case    BN_FUZZ_OP_NEG:
             ret = BN_sub(A, zero, B) == 0 ? -1 : 0;
             break;
+        case    BN_FUZZ_OP_ABS:
+            if ( BN_cmp(B, zero) < 0 ) {
+                if ( opt & 2 ) {
+                    ret = BN_sub(A, zero, B) == 0 ? -1 : 0;
+                } else {
+                    /* Another way to invert the sign of B */
+                    ret = (BN_sub(A, B, B) != 0 && BN_sub(A, A, B) != 0) ? 0 : -1;
+                }
+            } else {
+                /* B is already a positive value */
+                BN_copy(A, B);
+                ret = 0;
+            }
+            break;
         default:
             ret = -1;
     }
