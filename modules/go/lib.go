@@ -21,6 +21,7 @@ const (
     BN_FUZZ_OP_SQR = 13
     BN_FUZZ_OP_NEG = 14
     BN_FUZZ_OP_ABS = 15
+    BN_FUZZ_OP_IS_PRIME = 16
 )
 var g_nums = make([]*big.Int, 4)
 
@@ -215,6 +216,25 @@ func op_ABS(A int, B int, C int, D int, direct bool) int {
     }
     return 0
 }
+
+func op_IS_PRIME(A int, B int, C int, D int, direct bool) int {
+    /* "ProbablyPrime is 100% accurate for inputs less than 2⁶⁴."
+     * https://golang.org/pkg/math/big/#Int.ProbablyPrime
+    */
+    max64 := big.NewInt(0).Lsh( big.NewInt(1), 64 )
+    max64.Sub(max64, big.NewInt(1))
+    if g_nums[A].Cmp(max64) < 0 {
+        is_prime := g_nums[B].ProbablyPrime(0)
+        if is_prime {
+            g_nums[A] = big.NewInt(1)
+        } else {
+            g_nums[A] = big.NewInt(0)
+        }
+        return 0
+    } else {
+        return -1
+    }
+}
 //export go_bignum_operation
 func go_bignum_operation(op int, A int, B int, C int, D int, opt int) int {
     direct := false
@@ -234,7 +254,8 @@ func go_bignum_operation(op int, A int, B int, C int, D int, opt int) int {
     op == BN_FUZZ_OP_CMP { return op_CMP(A, B, C, D, direct) } else if
     op == BN_FUZZ_OP_SQR { return op_SQR(A, B, C, D, direct) } else if
     op == BN_FUZZ_OP_NEG { return op_NEG(A, B, C, D, direct) } else if
-    op == BN_FUZZ_OP_ABS { return op_ABS(A, B, C, D, direct) }
+    op == BN_FUZZ_OP_ABS { return op_ABS(A, B, C, D, direct) } else if
+    op == BN_FUZZ_OP_IS_PRIME { return op_IS_PRIME(A, B, C, D, direct) }
 
     return -1
 }

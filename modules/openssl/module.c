@@ -181,6 +181,18 @@ static int operation(
                 ret = 0;
             }
             break;
+        case    BN_FUZZ_OP_IS_PRIME:
+            ret = BN_is_prime_ex(B, 0, NULL, NULL);
+            switch ( ret ) {
+                case 0:
+                    BN_set_word(A, 0);
+                    ret = 0;
+                    break;
+                case 1:
+                    BN_set_word(A, 1);
+                    ret = 0;
+                    break;
+            }
         default:
             ret = -1;
     }
