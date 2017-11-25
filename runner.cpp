@@ -23,7 +23,9 @@ bool Runner::run(void) {
     }
 
     for (size_t i = 0; i < NUM_BIGNUMS; i++) {
-        multi->bignum_from_bin(numbers[i], BNSTR_LEN, i);
+        if ( multi->bignum_from_bin(numbers[i], BNSTR_LEN, i) == false ) {
+            goto end;
+        }
     }
 
     operation_t operation;
