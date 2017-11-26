@@ -175,7 +175,7 @@ pub extern fn rust_bignum_operation(op: c_int, _opt: c_int) -> c_int {
             }
         }
         11 => { /* BN_FUZZ_OP_EXP = 11 */
-            if num2 >= BigInt::zero() && num2 <= BigInt::from_str_radix("1000", 10).unwrap() && num3 <= BigInt::from_str_radix("1000", 10).unwrap() && num3 >= BigInt::zero() {
+            if num2 > BigInt::zero() && num2 <= BigInt::from_str_radix("1000", 10).unwrap() && num3 <= BigInt::from_str_radix("1000", 10).unwrap() && num3 > BigInt::zero() {
                 let exp = num3.to_usize().unwrap();
                 *(NUM1.lock().unwrap()) = pow(num2, exp);
 

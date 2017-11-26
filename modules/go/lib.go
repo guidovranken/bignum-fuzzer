@@ -154,7 +154,7 @@ func op_GCD(A int, B int, C int, D int, direct bool) int {
 
 func op_EXP(A int, B int, C int, D int, direct bool) int {
     thousand := big.NewInt(1000)
-    if g_nums[B].Cmp(thousand) < 0 && g_nums[C].Cmp(thousand) < 0 {
+    if g_nums[B].Cmp(big.NewInt(0)) > 0 && g_nums[B].Cmp(thousand) < 0 && g_nums[C].Cmp(big.NewInt(0)) > 0 && g_nums[C].Cmp(thousand) < 0 {
         if direct {
             g_nums[A].Exp(g_nums[B], g_nums[C], nil)
             return 0

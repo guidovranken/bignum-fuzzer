@@ -143,7 +143,7 @@ static int operation(
             ret = BN_mod_add(A, B, C, D, ctx) == 0 ? -1 : 0;
             break;
         case    BN_FUZZ_OP_EXP:
-            if ( BN_ucmp(B, thousand) <= 0 && BN_ucmp(C, thousand) <= 0 ) {
+            if ( BN_cmp(B, zero) > 0 && BN_ucmp(B, thousand) <= 0 && BN_cmp(C, zero) > 0 && BN_ucmp(C, thousand) <= 0 ) {
                 ret = BN_exp(A, B, C, ctx) == 0 ? -1 : 0;
             } else {
                 ret = -1;

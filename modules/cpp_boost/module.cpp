@@ -114,7 +114,7 @@ static int operation(
             ret = -1;
             break;
         case    BN_FUZZ_OP_EXP:
-            if ( *B >= cpp_int(0) && *B <= cpp_int(1000) && *C >= cpp_int(0) && *C <= cpp_int(1000) ) {
+            if ( *B > cpp_int(0) && *B <= cpp_int(1000) && *C > cpp_int(0) && *C <= cpp_int(1000) ) {
                 int exp = static_cast<int>(*C);
                 *A = pow(*B, exp);
                 ret = 0;
