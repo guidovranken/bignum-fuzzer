@@ -121,7 +121,7 @@ static int operation(
             ret = BN_mod(A, B, C, ctx) == 0 ? -1 : 0;
             break;
         case    BN_FUZZ_OP_EXP_MOD:
-            if ( BN_cmp(A, zero) > 0 && BN_cmp(C, zero) != 0 ) {
+            if ( BN_cmp(B, zero) > 0 && BN_cmp(C, zero) != 0 ) {
                 if ( f_constant_time ) {
                     ret = BN_mod_exp_mont_consttime(A, B, C, D, ctx, NULL) == 0 ? -1 : 0;
                 } else {
