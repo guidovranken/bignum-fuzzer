@@ -179,6 +179,10 @@ pub extern fn rust_bignum_operation(op: c_int, _opt: c_int) -> c_int {
             }
             ret = 0;
         }
+        13 => { /* BN_FUZZ_OP_SQR = 13 */
+            *(NUM1.lock().unwrap()) = pow(num2, 2);
+            ret = 0;
+        }
         14 => { /* BN_FUZZ_OP_NEG = 14 */
             *(NUM1.lock().unwrap()) = num2.neg().clone();
             ret = 0;
