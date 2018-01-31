@@ -246,7 +246,7 @@ func go_bignum_operation(op int, A int, B int, C int, D int, opt int) int {
     op == BN_FUZZ_OP_MUL { return op_MUL(A, B, C, D, direct) } else if
     op == BN_FUZZ_OP_DIV { return op_DIV(A, B, C, D, direct) } else if
     op == BN_FUZZ_OP_MOD { return op_MOD(A, B, C, D, direct) } else if
-    op == BN_FUZZ_OP_EXP_MOD { /* TODO */ return -1 } else if
+    op == BN_FUZZ_OP_EXP_MOD { return op_EXP_MOD(A, B, C, D, direct) } else if
     op == BN_FUZZ_OP_LSHIFT { return op_LSHIFT(A, B, C, D, direct) } else if
     op == BN_FUZZ_OP_RSHIFT { return -1 } else if
     op == BN_FUZZ_OP_GCD { return op_GCD(A, B, C, D, direct) } else if
