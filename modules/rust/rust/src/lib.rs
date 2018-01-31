@@ -3,14 +3,12 @@
 extern crate lazy_static;
 extern crate libc;
 extern crate num;
-use libc::{uint8_t, size_t, c_int, c_char};
+use libc::{c_int, c_char};
 use num::{Num, BigInt, Zero, One, Integer, pow};
-use std::ptr::{null};
 use std::sync::Mutex;
 use std::ffi::CStr;
 use std::ffi::CString;
 use std::ops::{Add, Sub, Mul, Div, Rem, Shl, Neg};
-use std::cmp::Ordering;
 use num::ToPrimitive;
 use num::Signed;
 lazy_static! {
@@ -108,23 +106,11 @@ fn modexp(mut base: BigInt, mut exp: BigInt, modulus: BigInt) -> BigInt {
 
 #[no_mangle]
 pub extern fn rust_bignum_operation(op: c_int, _opt: c_int) -> c_int {
-    let mut num1 = NUM1.lock().unwrap().clone();
-    let mut num2 = NUM2.lock().unwrap().clone();
-    let mut num3 = NUM3.lock().unwrap().clone();
-    let mut num4 = NUM4.lock().unwrap().clone();
+    let num2 = NUM2.lock().unwrap().clone();
+    let num3 = NUM3.lock().unwrap().clone();
+    let num4 = NUM4.lock().unwrap().clone();
 
     let mut ret = -1;
-    /*
-    BN_FUZZ_OP_DIV = 4
-    BN_FUZZ_OP_EXP_MOD = 6
-    BN_FUZZ_OP_LSHIFT = 7
-    BN_FUZZ_OP_RSHIFT = 8
-    BN_FUZZ_OP_GCD = 9
-    BN_FUZZ_OP_MOD_ADD = 10
-    BN_FUZZ_OP_EXP = 11
-    BN_FUZZ_OP_CMP = 12
-    BN_FUZZ_OP_SQR = 13
-    */
     match op {
         1 => { /* BN_FUZZ_OP_ADD = 1 */
             *(NUM1.lock().unwrap()) = num2.add(num3).clone();
