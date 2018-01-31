@@ -46,6 +46,7 @@ bool Runner::run(void) {
         }
 
 
+#if 0
         /* Swap two arbitrary bignums */
         uint8_t swap_a, swap_b;
         if ( input->extract(&swap_a, sizeof(swap_a)) != true ) {
@@ -59,6 +60,7 @@ bool Runner::run(void) {
         swap_b %= NUM_BIGNUMS;
 
         multi->swap_bignum(swap_a, swap_b);
+#endif
 
         if ( loops == 2 ) {
             break;
