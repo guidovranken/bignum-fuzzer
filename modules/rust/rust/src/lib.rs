@@ -160,6 +160,14 @@ pub extern fn rust_bignum_operation(op: c_int, _opt: c_int) -> c_int {
                 ret = -1
             }
         }
+        10 => { /* BN_FUZZ_OP_MOD_ADD = 10 */
+            if num4 > BigInt::zero() {
+                *(NUM1.lock().unwrap()) = num2.add(num3).rem(num4).clone();
+                ret = 0;
+            } else {
+                ret = -1
+            }
+        }
         11 => { /* BN_FUZZ_OP_EXP = 11 */
             if num2 > BigInt::zero() && num2 <= BigInt::from_str_radix("1000", 10).unwrap() && num3 <= BigInt::from_str_radix("1000", 10).unwrap() && num3 > BigInt::zero() {
                 let exp = num3.to_usize().unwrap();

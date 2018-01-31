@@ -152,6 +152,16 @@ func op_GCD(A int, B int, C int, D int, direct bool) int {
     }
 }
 
+func op_MOD_ADD(A int, B int, C int, D int, direct bool) int {
+    if g_nums[D].Cmp(big.NewInt(0)) > 0 {
+        g_nums[A].Add(g_nums[B], g_nums[C])
+        g_nums[A].Mod(g_nums[A], g_nums[D])
+        return 0
+    } else {
+        return -1
+    }
+}
+
 func op_EXP(A int, B int, C int, D int, direct bool) int {
     thousand := big.NewInt(1000)
     if g_nums[B].Cmp(big.NewInt(0)) > 0 && g_nums[B].Cmp(thousand) < 0 && g_nums[C].Cmp(big.NewInt(0)) > 0 && g_nums[C].Cmp(thousand) < 0 {
@@ -250,6 +260,7 @@ func go_bignum_operation(op int, A int, B int, C int, D int, opt int) int {
     op == BN_FUZZ_OP_LSHIFT { return op_LSHIFT(A, B, C, D, direct) } else if
     op == BN_FUZZ_OP_RSHIFT { return -1 } else if
     op == BN_FUZZ_OP_GCD { return op_GCD(A, B, C, D, direct) } else if
+    op == BN_FUZZ_OP_MOD_ADD { return op_MOD_ADD(A, B, C, D, direct) } else if
     op == BN_FUZZ_OP_EXP { return op_EXP(A, B, C, D, direct); } else if
     op == BN_FUZZ_OP_CMP { return op_CMP(A, B, C, D, direct) } else if
     op == BN_FUZZ_OP_SQR { return op_SQR(A, B, C, D, direct) } else if
