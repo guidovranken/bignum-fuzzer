@@ -1,11 +1,13 @@
+all: module.a
+
 CC=clang
 CFLAGS=-Wall -O3 -g3 -I../../include
-all: module.a
-#bash ../link.sh module.a libcrypto.a
 module.a: module.o
-	bash ../link.sh module.a ./boringssl/boringssl/build/crypto/libcrypto.a
+	test $(OPENSSL_LIBCRYPTO_A_PATH)
+	bash ../link.sh module.a $(OPENSSL_LIBCRYPTO_A_PATH)
 	ranlib module.a
 module.o: module.c
-	$(CC) $(CFLAGS) -Iboringssl/boringssl/include -fPIC -c module.c -o module.o
+	test $(OPENSSL_INCLUDE_PATH)
+	$(CC) $(CFLAGS) -I $(OPENSSL_INCLUDE_PATH) -fPIC -c module.c -o module.o
 clean:
 	rm -rf module.o module.a
