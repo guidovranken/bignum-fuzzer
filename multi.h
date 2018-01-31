@@ -37,7 +37,8 @@ class Multi {
                 modules.push_back( new ModuleCtx(curmod) );
 
             }
-            //logging = true;
+            logging = false;
+            negative = true;
         }
         ~Multi() {
             destroy_bignum();
@@ -54,8 +55,10 @@ class Multi {
         void destroy_bignum(void);
         void shutdown(void);
         void swap_bignum(size_t a, size_t b);
+        void SetLogging(const bool setlogging);
+        void SetNegative(const bool setnegative);
     private:
-        bool logging;
+        bool logging, negative;
         size_t get_num_modules(void);
         std::vector<ModuleCtx*> modules;
         int decimal_strcmp(const char *s1, const char *s2);

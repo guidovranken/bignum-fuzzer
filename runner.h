@@ -12,6 +12,8 @@ class Runner {
             delete multi;
         }
         bool run(void);
+        void SetLogging(const bool setlogging);
+        void SetNegative(const bool setnegative);
     private:
         Input* input;
         Multi* multi;

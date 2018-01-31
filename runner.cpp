@@ -77,3 +77,11 @@ end:
     multi->shutdown();
     return ret;
 }
+
+void Runner::SetLogging(const bool setlogging) {
+    multi->SetLogging(setlogging);
+}
+
+void Runner::SetNegative(const bool setnegative) {
+    multi->SetNegative(setnegative);
+}

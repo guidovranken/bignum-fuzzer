@@ -18,7 +18,7 @@ bool Multi::bignum_from_bin(const uint8_t* data, size_t size, size_t bn_idx) {
     /* Convert binary to decimal string */
     char* string = (char*)malloc(size+1);
     for (size_t i = 0; i < size; i++) {
-        if ( i == 0 ) {
+        if ( negative == true && i == 0 ) {
             /* The first character may be [0123456789-]
              * - is to denote a negative value
              */
@@ -184,4 +184,10 @@ void Multi::shutdown(void) {
     for ( auto curmod : modules ) {
         curmod->mod->shutdown();
     }
+}
+void Multi::SetLogging(const bool setlogging) {
+    logging = setlogging;
+}
+void Multi::SetNegative(const bool setnegative) {
+    negative = setnegative;
 }
