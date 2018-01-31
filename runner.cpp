@@ -19,7 +19,8 @@ bool Runner::run(void) {
     }
 
     if ( multi->initialize() == false ) {
-        goto end;
+        printf("Fatal error: cannot initialize. Exiting.\n");
+        exit(0);
     }
 
     for (size_t i = 0; i < NUM_BIGNUMS; i++) {
