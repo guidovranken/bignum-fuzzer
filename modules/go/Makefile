@@ -1,5 +1,5 @@
 CC=clang
-CFLAGS=-Wall -O3 -g3 -I../../include -fsanitize-coverage=trace-pc-guard,indirect-calls,trace-cmp,trace-gep,trace-div,pc-table,edge
+CFLAGS=-Wall -O3 -g3 -I../../include -fsanitize-coverage=trace-pc-guard,indirect-calls,trace-cmp,trace-gep,trace-div,edge
 all: module.a
 lib.a: lib.go
 	go build -buildmode=c-archive lib.go

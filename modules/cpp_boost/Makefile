@@ -1,5 +1,5 @@
 CXX=clang++
-CFLAGS=-Wall -O3 -g -I../../include -std=c++11 -g -Wall -I include -fsanitize-coverage=trace-pc-guard,indirect-calls,trace-cmp,trace-gep,trace-div,pc-table,edge -fsanitize=address
+CFLAGS=-Wall -O3 -g -I../../include -std=c++11 -g -Wall -I include -fsanitize-coverage=trace-pc-guard,indirect-calls,trace-cmp,trace-gep,trace-div,edge -fsanitize=address
 
 all: module.a
 module.a: module.o
