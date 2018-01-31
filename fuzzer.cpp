@@ -8,7 +8,7 @@ extern module_t mod_go;
 extern module_t mod_cpp_boost;
 extern module_t mod_rust;
 
-bool g_logging, g_no_negative;
+bool g_logging, g_no_negative, g_no_compare;
 
 extern "C" int LLVMFuzzerInitialize(int *argc, char ***argv)
 {
@@ -17,6 +17,7 @@ extern "C" int LLVMFuzzerInitialize(int *argc, char ***argv)
 
     g_logging = false;
     g_no_negative = false;
+    g_no_compare = false;
 
     for (i = 0; i < *argc; i++) {
         if ( !strcmp(_argv[i], "--logging") ) {
@@ -24,6 +25,9 @@ extern "C" int LLVMFuzzerInitialize(int *argc, char ***argv)
         }
         else if ( !strcmp(_argv[i], "--no_negative") ) {
             g_no_negative = true;
+        }
+        else if ( !strcmp(_argv[i], "--no_compare") ) {
+            g_no_compare = true;
         }
         else {
             if ( _argv[i][0] == '-' && _argv[i][1] == '-' ) {

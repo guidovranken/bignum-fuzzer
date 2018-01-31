@@ -11,7 +11,7 @@
 bool Runner::run(void) {
     uint8_t numbers[NUM_BIGNUMS][BNSTR_LEN];
     bool ret = false;
-    bool compare = true;
+    bool l_compare = true;
     size_t loops = 0;
 
     if ( input->extract((uint8_t*)numbers, sizeof(numbers)) == false ) {
@@ -38,11 +38,11 @@ bool Runner::run(void) {
         }
 
         if ( multi->exec_operation(operation, opt) == false ) {
-            compare = false;
+            l_compare = false;
             break;
         }
 
-        if ( multi->compare() == false ) {
+        if ( compare == true && multi->compare() == false ) {
             abort();
         }
 
@@ -68,8 +68,8 @@ bool Runner::run(void) {
         }
     }
 
-    if ( compare == true ) {
-        if ( multi->compare() == false ) {
+    if ( l_compare == true ) {
+        if ( compare == true && multi->compare() == false ) {
             abort();
         }
     }
@@ -85,4 +85,8 @@ void Runner::SetLogging(const bool setlogging) {
 
 void Runner::SetNegative(const bool setnegative) {
     multi->SetNegative(setnegative);
+}
+
+void Runner::SetCompare(const bool setcompare) {
+    compare = setcompare;
 }
