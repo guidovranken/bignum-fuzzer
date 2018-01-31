@@ -1,9 +1,9 @@
 #include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
-#include <bndiff/config.h>
-#include <bndiff/operation.h>
-#include <bndiff/module.h>
+#include <bnfuzz/config.h>
+#include <bnfuzz/operation.h>
+#include <bnfuzz/module.h>
 
 #include "runner.h"
 #include "multi.h"

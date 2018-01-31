@@ -2,9 +2,9 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdint.h>
-#include <bndiff/module.h>
-#include <bndiff/operation.h>
-#include <bndiff/bignum.h>
+#include <bnfuzz/module.h>
+#include <bnfuzz/operation.h>
+#include <bnfuzz/bignum.h>
 
 void rust_bignum_initialize(void);
 void rust_bignum_bignum_from_string(const char* s, int bn_index);

@@ -1,8 +1,8 @@
 #include <stdlib.h>
 #include <string.h>
-#include <bndiff/module.h>
-#include <bndiff/operation.h>
-#include <bndiff/bignum.h>
+#include <bnfuzz/module.h>
+#include <bnfuzz/operation.h>
+#include <bnfuzz/bignum.h>
 #include <boost/multiprecision/cpp_int.hpp>
 #include <iostream>
 #include <sstream>

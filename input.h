@@ -1,7 +1,7 @@
-#ifndef BNDIFF_INPUT_H
-#define BNDIFF_INPUT_H
-#include <bndiff/operation.h>
-#include <bndiff/config.h>
+#ifndef BNFUZZ_INPUT_H
+#define BNFUZZ_INPUT_H
+#include <bnfuzz/operation.h>
+#include <bnfuzz/config.h>
 #include <stdint.h>
 #include <stdlib.h>
 class Input {

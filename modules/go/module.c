@@ -1,9 +1,9 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-#include <bndiff/module.h>
-#include <bndiff/operation.h>
-#include <bndiff/bignum.h>
+#include <bnfuzz/module.h>
+#include <bnfuzz/operation.h>
+#include <bnfuzz/bignum.h>
 #include "lib.h"
 
 static int numbers[NUM_BIGNUMS];

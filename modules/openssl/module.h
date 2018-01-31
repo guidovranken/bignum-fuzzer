@@ -1,6 +1,6 @@
-#ifndef BNDIFF_MOD_MBEDTLS_H
-#define BNDIFF_MOD_MBEDTLS_H
+#ifndef BNFUZZ_MOD_MBEDTLS_H
+#define BNFUZZ_MOD_MBEDTLS_H
 
-#include <bndiff/module.h>
+#include <bnfuzz/module.h>
 
 #endif

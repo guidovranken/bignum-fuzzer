@@ -1,7 +1,7 @@
 #include <stdlib.h>
-#include <bndiff/module.h>
-#include <bndiff/operation.h>
-#include <bndiff/bignum.h>
+#include <bnfuzz/module.h>
+#include <bnfuzz/operation.h>
+#include <bnfuzz/bignum.h>
 #include <mbedtls/bignum.h>
 
 static int initialize(void)

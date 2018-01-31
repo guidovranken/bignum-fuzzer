@@ -1,7 +1,7 @@
-#ifndef BNDIFF_BIGNUM_H
-#define BNDIFF_BIGNUM_H
+#ifndef BNFUZZ_BIGNUM_H
+#define BNFUZZ_BIGNUM_H
 
-#include <bndiff/config.h>
+#include <bnfuzz/config.h>
 
 typedef struct {
     void*               BN[NUM_BIGNUMS];

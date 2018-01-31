@@ -1,8 +1,8 @@
-#ifndef BNDIFF_MODULE_H
-#define BNDIFF_MODULE_H
+#ifndef BNFUZZ_MODULE_H
+#define BNFUZZ_MODULE_H
 
-#include <bndiff/bignum.h>
-#include <bndiff/operation.h>
+#include <bnfuzz/bignum.h>
+#include <bnfuzz/operation.h>
 #include <stdint.h>
 
 typedef struct {

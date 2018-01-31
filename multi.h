@@ -1,9 +1,9 @@
-#ifndef BNDIFF_MULTI_H
-#define BNDIFF_MULTI_H
+#ifndef BNFUZZ_MULTI_H
+#define BNFUZZ_MULTI_H
 #include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
-#include <bndiff/module_cxx.h>
+#include <bnfuzz/module_cxx.h>
 
 class ModuleCtx {
     public:

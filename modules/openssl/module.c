@@ -4,9 +4,9 @@
 #include <openssl/bn.h>
 #include <openssl/rsa.h>
 #include <openssl/crypto.h>
-#include <bndiff/module.h>
-#include <bndiff/operation.h>
-#include <bndiff/bignum.h>
+#include <bnfuzz/module.h>
+#include <bnfuzz/operation.h>
+#include <bnfuzz/bignum.h>
 
 static BN_CTX *ctx = NULL;
 BIGNUM *zero = NULL, *minone = NULL, *ten = NULL, *thousand = NULL;

@@ -1,6 +1,6 @@
 #include <stdint.h>
 #include <stdlib.h>
-#include <bndiff/module_cxx.h>
+#include <bnfuzz/module_cxx.h>
 #include "runner.h"
 
 extern module_t mod_openssl;

@@ -1,8 +1,8 @@
 #include <stdlib.h>
 #include <string.h>
-#include <bndiff/module.h>
-#include <bndiff/operation.h>
-#include <bndiff/bignum.h>
+#include <bnfuzz/module.h>
+#include <bnfuzz/operation.h>
+#include <bnfuzz/bignum.h>
 
 static int initialize(void)
 {
@@ -71,7 +71,7 @@ static int operation(
      * (BIGNUM*)bignum_cluster->BN[3];
      *
      * Handle as many operations declared in the 'operation' enum in
-     * include/bndiff/operation.h
+     * include/bnfuzz/operation.h
      *
      * If you don't support a certain operation, always return -1.
      *

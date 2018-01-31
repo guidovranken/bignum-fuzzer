@@ -1,5 +1,5 @@
-#ifndef BNDIFF_OPERATION_H
-#define BNDIFF_OPERATION_H
+#ifndef BNFUZZ_OPERATION_H
+#define BNFUZZ_OPERATION_H
 
 #include <stdint.h>
 #include <stddef.h>
