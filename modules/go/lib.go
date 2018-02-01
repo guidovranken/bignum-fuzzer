@@ -137,6 +137,17 @@ func op_LSHIFT(A int, B int, C int, D int, direct bool) int {
     return 0
 }
 
+func op_RSHIFT(A int, B int, C int, D int, direct bool) int {
+    if direct {
+        g_nums[A].Rsh(g_nums[B], 1)
+    } else {
+        tmp := big.NewInt(0)
+        tmp.Rsh(g_nums[B], 1)
+        g_nums[A] = tmp
+    }
+    return 0
+}
+
 func op_GCD(A int, B int, C int, D int, direct bool) int {
     if g_nums[B].Cmp(big.NewInt(0)) > 0 && g_nums[C].Cmp(big.NewInt(0)) > 0 {
         if direct {
@@ -258,7 +269,7 @@ func go_bignum_operation(op int, A int, B int, C int, D int, opt int) int {
     op == BN_FUZZ_OP_MOD { return op_MOD(A, B, C, D, direct) } else if
     op == BN_FUZZ_OP_EXP_MOD { return op_EXP_MOD(A, B, C, D, direct) } else if
     op == BN_FUZZ_OP_LSHIFT { return op_LSHIFT(A, B, C, D, direct) } else if
-    op == BN_FUZZ_OP_RSHIFT { return -1 } else if
+    op == BN_FUZZ_OP_RSHIFT { return op_RSHIFT(A, B, C, D, direct) } else if
     op == BN_FUZZ_OP_GCD { return op_GCD(A, B, C, D, direct) } else if
     op == BN_FUZZ_OP_MOD_ADD { return op_MOD_ADD(A, B, C, D, direct) } else if
     op == BN_FUZZ_OP_EXP { return op_EXP(A, B, C, D, direct); } else if

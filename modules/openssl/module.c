@@ -134,7 +134,7 @@ static int operation(
             ret = BN_lshift(A, B, 1) == 0 ? -1 : 0;
             break;
         case    BN_FUZZ_OP_RSHIFT:
-            ret = -1;
+            ret = BN_rshift(A, B, 1) == 0 ? -1 : 0;
             break;
         case    BN_FUZZ_OP_GCD:
             ret = BN_gcd(A, B, C, ctx) == 0 ? -1 : 0;

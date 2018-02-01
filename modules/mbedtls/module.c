@@ -231,7 +231,26 @@ static int operation(
             }
             break;
         case    BN_FUZZ_OP_RSHIFT:
-            ret = -1;
+            {
+                mbedtls_mpi* tmp = NULL;
+                if ( (tmp = malloc(sizeof(*tmp))) == NULL ) {
+                    ret = -1;
+                } else {
+                    mbedtls_mpi_init(tmp);
+                    if ( mbedtls_mpi_copy(tmp, B) != 0 ) {
+                        mbedtls_mpi_free(tmp);
+                        free(tmp);
+                        ret = -1;
+                    } else {
+                        ret = mbedtls_mpi_shift_r(tmp, 1) == 0 ? 0 : -1;
+                        if ( ret == 0 ) {
+                            ret = mbedtls_mpi_copy(A, tmp) == 0 ? 0 : -1;
+                        }
+                        mbedtls_mpi_free(tmp);
+                        free(tmp);
+                    }
+                }
+            }
             break;
         case    BN_FUZZ_OP_GCD:
             if ( mbedtls_mpi_cmp_int(B, 0) > 0 && mbedtls_mpi_cmp_int(C, 0) > 0 ) {

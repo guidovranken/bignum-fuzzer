@@ -8,7 +8,7 @@ use num::{Num, BigInt, Zero, One, Integer, pow};
 use std::sync::Mutex;
 use std::ffi::CStr;
 use std::ffi::CString;
-use std::ops::{Add, Sub, Mul, Div, Rem, Shl, Neg};
+use std::ops::{Add, Sub, Mul, Div, Rem, Shl, Shr, Neg};
 use num::ToPrimitive;
 use num::Signed;
 lazy_static! {
@@ -150,6 +150,10 @@ pub extern fn rust_bignum_operation(op: c_int, _opt: c_int) -> c_int {
         }
         7 => { /* BN_FUZZ_OP_LSHIFT = 7 */
             *(NUM1.lock().unwrap()) = num2.shl(1).clone();
+            ret = 0;
+        }
+        8 => { /* BN_FUZZ_OP_RSHIFT = 8 * */
+            *(NUM1.lock().unwrap()) = num2.shr(1).clone();
             ret = 0;
         }
         9 => { /* BN_FUZZ_OP_GCD = 9 */
