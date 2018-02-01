@@ -88,7 +88,11 @@ static int operation(
             }
             break;
         case    BN_FUZZ_OP_MOD:
-            ret = -1;
+            if ( *C != cpp_int(0) ) {
+                *A = powm(*B, cpp_int(1), *C);
+            } else {
+                ret = -1;
+            }
             break;
         case    BN_FUZZ_OP_EXP_MOD:
             {
@@ -103,7 +107,7 @@ static int operation(
             *A = *B << 1;
             break;
         case    BN_FUZZ_OP_RSHIFT:
-            ret = -1;
+            *A = *B >> 1;
             break;
         case    BN_FUZZ_OP_GCD:
             ret = -1;
@@ -111,7 +115,12 @@ static int operation(
             /* XXX */
             break;
         case    BN_FUZZ_OP_MOD_ADD:
-            ret = -1;
+            if ( *D != cpp_int(0) ) {
+                add(*A, *B, *C);
+                *A = powm(*A, cpp_int(1), *D);
+            } else {
+                ret = -1;
+            }
             break;
         case    BN_FUZZ_OP_EXP:
             if ( *B > cpp_int(0) && *B <= cpp_int(1000) && *C > cpp_int(0) && *C <= cpp_int(1000) ) {
