@@ -3,10 +3,8 @@
 #include <bnfuzz/module_cxx.h>
 #include "runner.h"
 
-extern module_t mod_openssl;
-extern module_t mod_go;
-extern module_t mod_cpp_boost;
-extern module_t mod_rust;
+extern module_t mod_evm_geth;
+extern module_t mod_evm_parity;
 
 bool g_logging, g_no_negative, g_no_compare;
 
@@ -44,10 +42,8 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size)
 {
     module_container_t modules;
 
-    modules.push_back(&mod_openssl);
-    modules.push_back(&mod_rust);
-    modules.push_back(&mod_go);
-    modules.push_back(&mod_cpp_boost);
+    modules.push_back(&mod_evm_geth);
+    modules.push_back(&mod_evm_parity);
 
     int ret;
     Runner* runner = new Runner(data, size, modules);

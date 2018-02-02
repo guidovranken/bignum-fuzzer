@@ -33,6 +33,7 @@ bool Runner::run(void) {
     while ( input->extract(&operation, sizeof(operation)) == true ) {
         loops++;
         uint8_t opt;
+        operation %= BN_FUZZ_OP_ETH_MAX;
         if ( input->extract(&opt, sizeof(opt)) != true ) {
             break;
         }
