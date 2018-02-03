@@ -163,6 +163,14 @@ static int operation(
                 ret = -1;
             }
             break;
+        case    BN_FUZZ_OP_SWAP:
+            {
+                cpp_int tmp = *A;
+                *A = *B;
+                *B = tmp;
+                ret = 0;
+            }
+            break;
         default:
             ret = -1;
     }

@@ -330,6 +330,12 @@ static int operation(
                 }
             }
             break;
+        case    BN_FUZZ_OP_SWAP:
+            {
+                mbedtls_mpi_swap(A, B);
+                ret = 0;
+            }
+            break;
         default:
             ret = -1;
     }

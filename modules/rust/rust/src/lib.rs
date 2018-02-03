@@ -212,6 +212,12 @@ pub extern fn rust_bignum_operation(op: c_int, _opt: c_int) -> c_int {
                 ret = -1
             }
         }
+        18 => { /* BN_FUZZ_OP_SWAP = 18 */
+            let tmp = NUM1.lock().unwrap().clone();
+            *(NUM1.lock().unwrap()) = num2.clone();
+            *(NUM2.lock().unwrap()) = tmp;
+            ret = 0;
+        }
         _ => {
             ret = -1;
         }
