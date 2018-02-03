@@ -7,6 +7,7 @@ class Runner {
             input = new Input(data, size);
             multi = new Multi(loadmodules);
             compare = true;
+            num_len = 500;
         }
         ~Runner(void) {
             delete input;
@@ -16,8 +17,10 @@ class Runner {
         void SetLogging(const bool setlogging);
         void SetNegative(const bool setnegative);
         void SetCompare(const bool setcompare);
+        void SetNumberLength(const size_t _num_len);
     private:
         bool compare;
+        size_t num_len;
         Input* input;
         Multi* multi;
 };

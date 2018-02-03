@@ -10,6 +10,8 @@ extern module_t mod_rust;
 
 bool g_logging, g_no_negative, g_no_compare;
 
+size_t num_len;
+
 extern "C" int LLVMFuzzerInitialize(int *argc, char ***argv)
 {
     int i;
@@ -18,6 +20,7 @@ extern "C" int LLVMFuzzerInitialize(int *argc, char ***argv)
     g_logging = false;
     g_no_negative = false;
     g_no_compare = false;
+    num_len = 0;
 
     for (i = 0; i < *argc; i++) {
         if ( !strcmp(_argv[i], "--logging") ) {
@@ -28,6 +31,16 @@ extern "C" int LLVMFuzzerInitialize(int *argc, char ***argv)
         }
         else if ( !strcmp(_argv[i], "--no_compare") ) {
             g_no_compare = true;
+        }
+        else if ( !strncmp(_argv[i], "--num_len=", 10) ) {
+            long l;
+            l = strtol(_argv[i]+10, NULL, 10);
+            if ( l < 1 ) {
+                printf("Invalid --num_len argument\n");
+                exit(0);
+            }
+            num_len = (size_t)l;
+
         }
         else {
             if ( _argv[i][0] == '-' && _argv[i][1] == '-' ) {
@@ -60,6 +73,9 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size)
     }
     if ( g_no_compare == true ) {
         runner->SetCompare(false);
+    }
+    if ( num_len != 0 ) {
+        runner->SetNumberLength(num_len);
     }
 
     ret = runner->run() == true ? 1 : 0;

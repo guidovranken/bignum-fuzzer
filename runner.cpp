@@ -9,7 +9,7 @@
 #include "multi.h"
 
 bool Runner::run(void) {
-    uint8_t numbers[NUM_BIGNUMS][BNSTR_LEN];
+    uint8_t numbers[NUM_BIGNUMS][num_len];
     bool ret = false;
     bool l_compare = true;
     size_t loops = 0;
@@ -24,7 +24,7 @@ bool Runner::run(void) {
     }
 
     for (size_t i = 0; i < NUM_BIGNUMS; i++) {
-        if ( multi->bignum_from_bin(numbers[i], BNSTR_LEN, i) == false ) {
+        if ( multi->bignum_from_bin(numbers[i], num_len, i) == false ) {
             goto end;
         }
     }
@@ -89,4 +89,7 @@ void Runner::SetNegative(const bool setnegative) {
 
 void Runner::SetCompare(const bool setcompare) {
     compare = setcompare;
+}
+void Runner::SetNumberLength(const size_t _num_len) {
+    num_len = _num_len;
 }
