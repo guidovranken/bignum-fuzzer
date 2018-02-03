@@ -193,6 +193,7 @@ static int operation(
                     ret = 0;
                     break;
             }
+            break;
         default:
             ret = -1;
     }
