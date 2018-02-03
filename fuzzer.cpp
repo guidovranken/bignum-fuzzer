@@ -58,6 +58,9 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size)
     if ( g_no_negative == true ) {
         runner->SetNegative(false);
     }
+    if ( g_no_compare == true ) {
+        runner->SetCompare(false);
+    }
 
     ret = runner->run() == true ? 1 : 0;
     delete runner;
