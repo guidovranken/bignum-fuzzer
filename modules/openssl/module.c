@@ -192,6 +192,9 @@ static int operation(
                     BN_set_word(A, 1);
                     ret = 0;
                     break;
+                default:
+                    ret = -1;
+                    break;
             }
             break;
         default:
