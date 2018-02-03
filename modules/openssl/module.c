@@ -118,7 +118,12 @@ static int operation(
             }
             break;
         case    BN_FUZZ_OP_MOD:
-            ret = BN_mod(A, B, C, ctx) == 0 ? -1 : 0;
+            if ( opt & 2 ) {
+                ret = BN_mod(A, B, C, ctx) == 0 ? -1 : 0;
+            } else {
+                /* "BN_mod() corresponds to BN_div() with dv set to NULL" */
+                ret = BN_div(NULL, A, B, C, ctx) == 0 ? -1 : 0;
+            }
             break;
         case    BN_FUZZ_OP_EXP_MOD:
             if ( BN_cmp(B, zero) > 0 && BN_cmp(C, zero) != 0 ) {
