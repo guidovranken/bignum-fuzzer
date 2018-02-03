@@ -155,6 +155,14 @@ static int operation(
             *A = abs(*B);
             ret = 0;
             break;
+        case    BN_FUZZ_OP_MOD_SUB:
+            if ( *D != cpp_int(0) ) {
+                subtract(*A, *B, *C);
+                *A = powm(*A, cpp_int(1), *D);
+            } else {
+                ret = -1;
+            }
+            break;
         default:
             ret = -1;
     }

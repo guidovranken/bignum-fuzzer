@@ -197,6 +197,9 @@ static int operation(
                     break;
             }
             break;
+        case BN_FUZZ_OP_MOD_SUB:
+            ret = BN_mod_sub(A, B, C, D, ctx) == 0 ? -1 : 0;
+            break;
         default:
             ret = -1;
     }

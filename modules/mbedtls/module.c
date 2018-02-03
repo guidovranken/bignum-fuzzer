@@ -319,6 +319,17 @@ static int operation(
                 }
             }
             break;
+        case    BN_FUZZ_OP_MOD_SUB:
+            {
+                ret = mbedtls_mpi_sub_mpi(A, B, C) == 0 ? 0 : -1;
+
+                if ( ret == 0 && mbedtls_mpi_cmp_int(A, 0) >= 0 && mbedtls_mpi_cmp_int(D, 0) > 0 ) {
+                    ret = mbedtls_mpi_mod_mpi(A, A, D) == 0 ? 0 : -1;
+                } else {
+                    ret = -1;
+                }
+            }
+            break;
         default:
             ret = -1;
     }

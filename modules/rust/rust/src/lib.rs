@@ -203,6 +203,15 @@ pub extern fn rust_bignum_operation(op: c_int, _opt: c_int) -> c_int {
             *(NUM1.lock().unwrap()) = num2.abs().clone();
             ret = 0;
         }
+        17 => { /* BN_FUZZ_OP_MOD_SUB = 17 */
+            if num4 > BigInt::zero() {
+                //*(NUM1.lock().unwrap()) = num3.sub(num2).rem(num4).clone();
+                *(NUM1.lock().unwrap()) = num2.sub(num3).rem(num4).clone();
+                ret = 0;
+            } else {
+                ret = -1
+            }
+        }
         _ => {
             ret = -1;
         }

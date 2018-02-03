@@ -22,6 +22,7 @@ enum operation
     BN_FUZZ_OP_NEG = 14,
     BN_FUZZ_OP_ABS = 15,
     BN_FUZZ_OP_IS_PRIME = 16,
+    BN_FUZZ_OP_MOD_SUB = 17,
 };
 
 typedef uint8_t operation_t;
