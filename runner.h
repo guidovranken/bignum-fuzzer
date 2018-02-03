@@ -8,6 +8,7 @@ class Runner {
             multi = new Multi(loadmodules);
             compare = true;
             num_len = 500;
+            operation = 0;
         }
         ~Runner(void) {
             delete input;
@@ -18,9 +19,11 @@ class Runner {
         void SetNegative(const bool setnegative);
         void SetCompare(const bool setcompare);
         void SetNumberLength(const size_t _num_len);
+        void SetOperation(const size_t operation);
     private:
         bool compare;
         size_t num_len;
+        size_t operation;
         Input* input;
         Multi* multi;
 };

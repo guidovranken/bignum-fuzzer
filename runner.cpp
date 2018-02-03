@@ -29,15 +29,18 @@ bool Runner::run(void) {
         }
     }
 
-    operation_t operation;
-    while ( input->extract(&operation, sizeof(operation)) == true ) {
+    operation_t l_operation;
+    while ( input->extract(&l_operation, sizeof(l_operation)) == true ) {
+        if ( operation != 0 ) {
+            l_operation = (operation_t)operation;
+        }
         loops++;
         uint8_t opt;
         if ( input->extract(&opt, sizeof(opt)) != true ) {
             break;
         }
 
-        if ( multi->exec_operation(operation, opt) == false ) {
+        if ( multi->exec_operation(l_operation, opt) == false ) {
             l_compare = false;
             break;
         }
@@ -92,4 +95,7 @@ void Runner::SetCompare(const bool setcompare) {
 }
 void Runner::SetNumberLength(const size_t _num_len) {
     num_len = _num_len;
+}
+void Runner::SetOperation(const size_t _operation) {
+    operation = _operation;
 }

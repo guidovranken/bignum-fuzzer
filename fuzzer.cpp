@@ -11,6 +11,7 @@ extern module_t mod_rust;
 bool g_logging, g_no_negative, g_no_compare;
 
 size_t num_len;
+size_t operation;
 
 extern "C" int LLVMFuzzerInitialize(int *argc, char ***argv)
 {
@@ -21,6 +22,7 @@ extern "C" int LLVMFuzzerInitialize(int *argc, char ***argv)
     g_no_negative = false;
     g_no_compare = false;
     num_len = 0;
+    operation = 0;
 
     for (i = 0; i < *argc; i++) {
         if ( !strcmp(_argv[i], "--logging") ) {
@@ -40,6 +42,16 @@ extern "C" int LLVMFuzzerInitialize(int *argc, char ***argv)
                 exit(0);
             }
             num_len = (size_t)l;
+
+        }
+        else if ( !strncmp(_argv[i], "--operation=", 12) ) {
+            long l;
+            l = strtol(_argv[i]+12, NULL, 10);
+            if ( l < 1 ) {
+                printf("Invalid --operation argument\n");
+                exit(0);
+            }
+            operation = (size_t)l;
 
         }
         else {
@@ -76,6 +88,9 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size)
     }
     if ( num_len != 0 ) {
         runner->SetNumberLength(num_len);
+    }
+    if ( operation != 0 ) {
+        runner->SetOperation(operation);
     }
 
     ret = runner->run() == true ? 1 : 0;
