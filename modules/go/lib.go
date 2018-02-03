@@ -24,6 +24,7 @@ const (
     BN_FUZZ_OP_IS_PRIME = 16
     BN_FUZZ_OP_MOD_SUB = 17
     BN_FUZZ_OP_SWAP = 18
+    BN_FUZZ_OP_MOD_MUL = 19
 )
 var g_nums = make([]*big.Int, 4)
 
@@ -276,6 +277,16 @@ func op_SWAP(A int, B int, C int, D int, direct bool) int {
     return 0
 }
 
+func op_MOD_MUL(A int, B int, C int, D int, direct bool) int {
+    if g_nums[D].Cmp(big.NewInt(0)) > 0 {
+        g_nums[A].Mul(g_nums[B], g_nums[C])
+        g_nums[A].Mod(g_nums[A], g_nums[D])
+        return 0
+    } else {
+        return -1
+    }
+}
+
 //export go_bignum_operation
 func go_bignum_operation(op int, A int, B int, C int, D int, opt int) int {
     direct := false
@@ -299,7 +310,8 @@ func go_bignum_operation(op int, A int, B int, C int, D int, opt int) int {
     op == BN_FUZZ_OP_ABS { return op_ABS(A, B, C, D, direct) } else if
     op == BN_FUZZ_OP_IS_PRIME { return op_IS_PRIME(A, B, C, D, direct) } else if
     op == BN_FUZZ_OP_MOD_SUB { return op_MOD_SUB(A, B, C, D, direct) } else if
-    op == BN_FUZZ_OP_SWAP { return op_SWAP(A, B, C, D, direct) }
+    op == BN_FUZZ_OP_SWAP { return op_SWAP(A, B, C, D, direct) } else if
+    op == BN_FUZZ_OP_MOD_MUL { return op_MOD_MUL(A, B, C, D, direct) }
 
     return -1
 }

@@ -218,6 +218,14 @@ pub extern fn rust_bignum_operation(op: c_int, _opt: c_int) -> c_int {
             *(NUM2.lock().unwrap()) = tmp;
             ret = 0;
         }
+        19 => { /* BN_FUZZ_OP_MOD_SUB = 19 */
+            if num4 > BigInt::zero() {
+                *(NUM1.lock().unwrap()) = num2.mul(num3).rem(num4).clone();
+                ret = 0;
+            } else {
+                ret = -1
+            }
+        }
         _ => {
             ret = -1;
         }

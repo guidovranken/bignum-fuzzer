@@ -209,6 +209,9 @@ static int operation(
             BN_swap(A, B);
             ret = 0;
             break;
+        case BN_FUZZ_OP_MOD_MUL:
+            ret = BN_mod_mul(A, B, C, D, ctx) == 0 ? -1 : 0;
+            break;
         default:
             ret = -1;
     }
