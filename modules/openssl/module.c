@@ -210,7 +210,45 @@ static int operation(
             ret = 0;
             break;
         case BN_FUZZ_OP_MOD_MUL:
-            ret = BN_mod_mul(A, B, C, D, ctx) == 0 ? -1 : 0;
+            switch ( opt % 3 ) {
+                case    0:
+                    ret = BN_mod_mul(A, B, C, D, ctx) == 0 ? -1 : 0;
+                    break;
+                case    1:
+                    {
+                        BN_RECP_CTX *recp = BN_RECP_CTX_new();
+                        BN_RECP_CTX_set(recp, D, ctx);
+                        ret = BN_mod_mul_reciprocal(A, B, C, recp, ctx) == 0 ? -1 : 0;
+                        BN_RECP_CTX_free(recp);
+                    }
+                    break;
+                case 2:
+                    {
+                        BN_MONT_CTX* mont = BN_MONT_CTX_new();
+                        ret = BN_MONT_CTX_set(mont, D, ctx) == 0 ? -1 : 0;
+                        if ( ret == 0 ) {
+                            BIGNUM *b, *c, *_b, *_c;
+                            _b = BN_dup(B);
+                            _c = BN_dup(C);
+                            b = BN_new();
+                            c = BN_new();
+                            BN_nnmod(_b, _b, D, ctx);
+                            BN_nnmod(_c, _c, D, ctx);
+                            BN_to_montgomery(b, _b, mont, ctx);
+                            BN_to_montgomery(c, _c, mont, ctx);
+                            ret = BN_mod_mul_montgomery(A, b, c, mont, ctx) == 0 ? -1 : 0;
+                            if ( ret == 0 ) {
+                                ret = BN_from_montgomery(A, A, mont, ctx) == 0 ? -1 : 0;
+                            }
+                            BN_free(_b);
+                            BN_free(_c);
+                            BN_free(b);
+                            BN_free(c);
+                        }
+                        BN_MONT_CTX_free(mont);
+                    }
+                    break;
+            }
             break;
         default:
             ret = -1;
