@@ -8,7 +8,7 @@ extern module_t mod_go;
 extern module_t mod_cpp_boost;
 extern module_t mod_rust;
 
-bool g_logging, g_no_negative, g_no_compare;
+bool g_logging, g_no_negative, g_no_compare, g_all_operations;
 
 size_t num_len;
 size_t operation;
@@ -21,6 +21,7 @@ extern "C" int LLVMFuzzerInitialize(int *argc, char ***argv)
     g_logging = false;
     g_no_negative = false;
     g_no_compare = false;
+    g_all_operations = false;
     num_len = 0;
     operation = 0;
 
@@ -54,6 +55,9 @@ extern "C" int LLVMFuzzerInitialize(int *argc, char ***argv)
             operation = (size_t)l;
 
         }
+        else if ( !strcmp(_argv[i], "--all_operations") ) {
+            g_all_operations = true;
+        }
         else {
             if ( _argv[i][0] == '-' && _argv[i][1] == '-' ) {
                 printf("Invalid option: %s\n", _argv[i]);
@@ -62,19 +66,16 @@ extern "C" int LLVMFuzzerInitialize(int *argc, char ***argv)
         }
     }
 
+    if ( g_all_operations == true && operation != 0 ) {
+        printf("You cannot specify --operation and --all_operations at the same time\n");
+        exit(0);
+    }
+
     return 0;
 }
 
-extern "C" int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size)
+static void run_single(const uint8_t *data, size_t size, module_container_t &modules, operation_t _operation)
 {
-    module_container_t modules;
-
-    modules.push_back(&mod_openssl);
-    modules.push_back(&mod_rust);
-    modules.push_back(&mod_go);
-    modules.push_back(&mod_cpp_boost);
-
-    int ret;
     Runner* runner = new Runner(data, size, modules);
 
     if ( g_logging == true ) {
@@ -89,11 +90,30 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size)
     if ( num_len != 0 ) {
         runner->SetNumberLength(num_len);
     }
-    if ( operation != 0 ) {
-        runner->SetOperation(operation);
+    if ( _operation != 0 ) {
+        runner->SetOperation(_operation);
+    }
+    runner->run();
+
+    delete runner;
+}
+
+extern "C" int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size)
+{
+    module_container_t modules;
+
+    modules.push_back(&mod_openssl);
+    modules.push_back(&mod_rust);
+    modules.push_back(&mod_go);
+    modules.push_back(&mod_cpp_boost);
+
+    if ( g_all_operations == true ) {
+        for (int i = 0; i < 256; i++) {
+            run_single(data, size, modules, (operation_t)i);
+        }
+    } else {
+        run_single(data, size, modules, operation);
     }
 
-    ret = runner->run() == true ? 1 : 0;
-    delete runner;
-    return ret;
+    return 0;
 }
