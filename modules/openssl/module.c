@@ -9,7 +9,7 @@
 #include <bnfuzz/bignum.h>
 
 static BN_CTX *ctx = NULL;
-BIGNUM *zero = NULL, *minone = NULL, *ten = NULL, *thousand = NULL;
+static BIGNUM *zero = NULL, *minone = NULL, *ten = NULL, *thousand = NULL;
 
 static int initialize(void)
 {
