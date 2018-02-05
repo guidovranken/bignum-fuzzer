@@ -95,6 +95,14 @@ static int operation(
 
     bool f_constant_time = opt & 1 ? true : false;
 
+    if ( opt & 2 && BN_cmp(B, C) == 0 ) {
+        B = C;
+    }
+
+    if ( opt & 4 && BN_cmp(C, D) == 0 ) {
+        C = D;
+    }
+
     switch ( operation ) {
         case    BN_FUZZ_OP_ADD:
             ret = BN_add(A, B, C) == 0 ? -1 : 0;
