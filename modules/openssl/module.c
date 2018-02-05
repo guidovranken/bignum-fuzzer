@@ -95,12 +95,14 @@ static int operation(
 
     bool f_constant_time = opt & 1 ? true : false;
 
-    if ( opt & 2 && BN_cmp(B, C) == 0 ) {
-        B = C;
-    }
+    if ( operation != BN_FUZZ_OP_SWAP ) {
+        if ( opt & 2 && BN_cmp(B, C) == 0 ) {
+            B = C;
+        }
 
-    if ( opt & 4 && BN_cmp(C, D) == 0 ) {
-        C = D;
+        if ( opt & 4 && BN_cmp(C, D) == 0 ) {
+            C = D;
+        }
     }
 
     switch ( operation ) {
