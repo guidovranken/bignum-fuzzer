@@ -250,6 +250,64 @@ static int operation(
                     break;
             }
             break;
+        case BN_FUZZ_OP_NOP:
+            {
+                ret = 0;
+                switch ( opt ) {
+                    case    0:
+                        {
+                            /* Test for bn_sqrx8x_internal carry bug on x86_64 (CVE-2017-3736) */
+                            if ( BN_cmp(C, B) >= 0 &&
+                                    BN_cmp(B, zero) > 0 ) /* this automatically implies that C is also positive */ {
+                                BN_MONT_CTX* mont = BN_MONT_CTX_new();
+                                BIGNUM* Bcopy = BN_dup(B);
+                                if ( BN_MONT_CTX_set(mont, C, ctx) != 0 ) {
+                                    BIGNUM* x = BN_new();
+                                    if ( BN_mod_mul_montgomery(x, B, B, mont, ctx) != 0 ) {
+                                        BIGNUM* y = BN_new();
+                                        if ( BN_mod_mul_montgomery(y, B, Bcopy, mont, ctx) != 0 ) {
+                                            if ( BN_cmp(x, y) != 0 ) {
+                                                abort();
+                                            }
+                                        }
+                                        BN_free(y);
+                                    }
+                                    BN_free(x);
+                                }
+                                BN_MONT_CTX_free(mont);
+                                BN_free(Bcopy);
+                            }
+                        }
+                        break;
+                    case    1:
+                        {
+                            /* Test for rsaz_1024_mul_avx2 overflow bug on x86_64 (CVE-2017-3738) */
+s                           if ( BN_cmp(C, zero) > 0 &&
+                                    BN_cmp(B, zero) > 0 &&
+                                    BN_cmp(A, zero) > 0 ) {
+                                BN_MONT_CTX* mont = BN_MONT_CTX_new();
+                                if ( BN_MONT_CTX_set(mont, C, ctx) != 0 ) {
+                                    BIGNUM* x = BN_new();
+                                    if ( BN_mod_exp_mont_consttime(x, A, B, C, ctx, mont) != 0 ) {
+                                        BIGNUM* y = BN_new();
+                                        if ( BN_mod_exp_mont(y, A, B, C, ctx, mont) != 0 ) {
+                                            if ( BN_cmp(x, y) != 0 ) {
+                                                abort();
+                                            }
+                                        }
+                                        BN_free(y);
+                                    }
+                                    BN_free(x);
+                                }
+                                BN_MONT_CTX_free(mont);
+                            }
+                        }
+                        break;
+                    default:
+                        break;
+                }
+            }
+            break;
         default:
             ret = -1;
     }
