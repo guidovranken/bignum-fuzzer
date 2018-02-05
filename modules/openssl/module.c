@@ -282,7 +282,7 @@ static int operation(
                     case    1:
                         {
                             /* Test for rsaz_1024_mul_avx2 overflow bug on x86_64 (CVE-2017-3738) */
-s                           if ( BN_cmp(C, zero) > 0 &&
+                            if ( BN_cmp(C, zero) > 0 &&
                                     BN_cmp(B, zero) > 0 &&
                                     BN_cmp(A, zero) > 0 ) {
                                 BN_MONT_CTX* mont = BN_MONT_CTX_new();
