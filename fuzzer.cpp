@@ -13,6 +13,23 @@ bool g_logging, g_no_negative, g_no_compare, g_all_operations;
 size_t num_len;
 size_t operation;
 
+static void print_help(void)
+{
+    printf("\n");
+    printf("Bignum fuzzer by Guido Vranken -- https://github.com/guidovranken/bignum-fuzzer\n");
+    printf("\n");
+    printf("Valid command-line parameters:\n");
+    printf("\n");
+    printf("\t--logging : print input bignums, operation # and output bignums\n");
+    printf("\t--no_negative : interpret all input bignums as positive integers \n");
+    printf("\t--no_compare : disable differential fuzzing; don't compare output bignums across modules\n");
+    printf("\t--num_len=<n>: input bignum size in number of decimal digits\n");
+    printf("\t--operation=<n> : disregard operation encoded in input; run each iteration with this operation\n");
+    printf("\t--all_operations : disregard operation encoded in input; run each iteration with all operations\n");
+    printf("\n");
+    exit(0);
+}
+
 extern "C" int LLVMFuzzerInitialize(int *argc, char ***argv)
 {
     int i;
@@ -40,7 +57,7 @@ extern "C" int LLVMFuzzerInitialize(int *argc, char ***argv)
             l = strtol(_argv[i]+10, NULL, 10);
             if ( l < 1 ) {
                 printf("Invalid --num_len argument\n");
-                exit(0);
+                print_help();
             }
             num_len = (size_t)l;
 
@@ -50,7 +67,7 @@ extern "C" int LLVMFuzzerInitialize(int *argc, char ***argv)
             l = strtol(_argv[i]+12, NULL, 10);
             if ( l < 1 ) {
                 printf("Invalid --operation argument\n");
-                exit(0);
+                print_help();
             }
             operation = (size_t)l;
 
@@ -58,17 +75,20 @@ extern "C" int LLVMFuzzerInitialize(int *argc, char ***argv)
         else if ( !strcmp(_argv[i], "--all_operations") ) {
             g_all_operations = true;
         }
+        else if ( !strcmp(_argv[i], "--help") ) {
+            print_help();
+        }
         else {
             if ( _argv[i][0] == '-' && _argv[i][1] == '-' ) {
                 printf("Invalid option: %s\n", _argv[i]);
-                exit(0);
+                print_help();
             }
         }
     }
 
     if ( g_all_operations == true && operation != 0 ) {
         printf("You cannot specify --operation and --all_operations at the same time\n");
-        exit(0);
+        print_help();
     }
 
     return 0;
