@@ -110,9 +110,7 @@ static int operation(
             *A = *B >> 1;
             break;
         case    BN_FUZZ_OP_GCD:
-            ret = -1;
-            gcd(*A, *B);
-            /* XXX */
+            *A = gcd(*B, *C);
             break;
         case    BN_FUZZ_OP_MOD_ADD:
             if ( *D != cpp_int(0) ) {
