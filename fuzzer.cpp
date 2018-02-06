@@ -108,7 +108,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size)
     modules.push_back(&mod_cpp_boost);
 
     if ( g_all_operations == true ) {
-        for (int i = 0; i < 256; i++) {
+        for (int i = 1; i < 256; i++) {
             run_single(data, size, modules, (operation_t)i);
         }
     } else {
