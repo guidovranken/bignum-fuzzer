@@ -104,6 +104,29 @@ static int operation(
             C = D;
         }
     }
+    if ( opt & 8 ) {
+        BN_set_flags(A, BN_FLG_CONSTTIME);
+    } else {
+        BN_set_flags(A, 0);
+    }
+
+    if ( opt & 16 ) {
+        BN_set_flags(B, BN_FLG_CONSTTIME);
+    } else {
+        BN_set_flags(B, 0);
+    }
+
+    if ( opt & 32 ) {
+        BN_set_flags(C, BN_FLG_CONSTTIME);
+    } else {
+        BN_set_flags(C, 0);
+    }
+
+    if ( opt & 64 ) {
+        BN_set_flags(D, BN_FLG_CONSTTIME);
+    } else {
+        BN_set_flags(D, 0);
+    }
 
     switch ( operation ) {
         case    BN_FUZZ_OP_ADD:
