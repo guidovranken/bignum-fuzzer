@@ -2,7 +2,7 @@
 
 rm -rf declare_modules.h push_modules.h link.sh
 
-echo -n "\$CXX fuzzer.o multi.o runner.o input.o \$LIBFUZZER_LINK " >>link.sh
+echo -n "\$CXX \$CXXFLAGS fuzzer.o multi.o runner.o input.o \$LIBFUZZER_LINK " >>link.sh
 
 for var in "$@"
 do
