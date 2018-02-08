@@ -3,10 +3,7 @@
 #include <bnfuzz/module_cxx.h>
 #include "runner.h"
 
-extern module_t mod_openssl;
-extern module_t mod_go;
-extern module_t mod_cpp_boost;
-extern module_t mod_rust;
+#include "declare_modules.h"
 
 bool g_logging, g_no_negative, g_no_compare, g_all_operations;
 
@@ -122,10 +119,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size)
 {
     module_container_t modules;
 
-    modules.push_back(&mod_openssl);
-    modules.push_back(&mod_rust);
-    modules.push_back(&mod_go);
-    modules.push_back(&mod_cpp_boost);
+    #include "push_modules.h"
 
     if ( g_all_operations == true ) {
         for (int i = 0; i < BN_FUZZ_OP_LAST; i++) {
