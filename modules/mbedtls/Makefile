@@ -1,5 +1,4 @@
-CC=clang
-CFLAGS=-Wall -O3 -g -I../../include -g -Wall -fsanitize-coverage=trace-pc-guard,indirect-calls,trace-cmp,trace-gep,trace-div,edge
+CFLAGS+=-I../../include
 all: module.a
 module.a: module.o
 	test $(MBEDTLS_LIBMBEDCRYPTO_A_PATH)

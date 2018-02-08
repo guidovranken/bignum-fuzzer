@@ -1,5 +1,4 @@
-CC=clang
-CFLAGS=-Wall -O3 -g3 -I../../include
+CFLAGS+=-I../../include
 all: module.a
 module.a: module.o
 	bash ../link.sh module.a additional_module.a

@@ -1,7 +1,6 @@
 all: module.a
 
-CC=clang
-CFLAGS=-Wall -O3 -g3 -I../../include
+CFLAGS+=-I../../include
 module.a: module.o
 	test $(OPENSSL_LIBCRYPTO_A_PATH)
 	bash ../link.sh module.a $(OPENSSL_LIBCRYPTO_A_PATH)
