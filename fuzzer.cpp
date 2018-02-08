@@ -88,6 +88,26 @@ extern "C" int LLVMFuzzerInitialize(int *argc, char ***argv)
         print_help();
     }
 
+#ifdef BNFUZZ_FLAG_NO_NEGATIVE
+    g_no_negative = true;
+#endif
+
+#ifdef BNFUZZ_FLAG_NO_COMPARE
+    g_no_compare = true;
+#endif
+
+#ifdef BNFUZZ_FLAG_NUM_LEN
+    num_len = BNFUZZ_FLAG_NUM_LEN;
+#endif
+
+#ifdef BNFUZZ_FLAG_OPERATION
+    operation = BNFUZZ_FLAG_OPERATION;
+#endif
+
+#ifdef BNFUZZ_FLAG_ALL_OPERATIONS
+    g_all_operations = true;
+#endif
+
     return 0;
 }
 
