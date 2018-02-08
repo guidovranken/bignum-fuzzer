@@ -247,7 +247,7 @@ func op_IS_PRIME(A int, B int, C int, D int, direct bool) int {
     */
     max64 := big.NewInt(0).Lsh( big.NewInt(1), 64 )
     max64.Sub(max64, big.NewInt(1))
-    if g_nums[A].Cmp(max64) < 0 {
+    if g_nums[B].Cmp(big.NewInt(0)) > 0 && g_nums[B].Cmp(max64) < 0 {
         is_prime := g_nums[B].ProbablyPrime(0)
         if is_prime {
             g_nums[A] = big.NewInt(1)
