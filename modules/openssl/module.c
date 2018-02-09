@@ -159,14 +159,29 @@ static int operation(
             }
             break;
         case    BN_FUZZ_OP_EXP_MOD:
-            if ( BN_cmp(B, zero) > 0 && BN_cmp(C, zero) != 0 ) {
-                if ( f_constant_time ) {
-                    ret = BN_mod_exp_mont_consttime(A, B, C, D, ctx, NULL) == 0 ? -1 : 0;
-                } else {
-                    ret = BN_mod_exp_mont(A, B, C, D, ctx, NULL) == 0 ? -1 : 0;
+            {
+                /* Use first and last bits of opt to construct range [0..3] */
+                const uint8_t which = (opt & 1 ? 1 : 0) + (opt & 128 ? 2 : 0);
+
+                switch ( which ) {
+                    case    0:
+                        ret = BN_mod_exp_mont_consttime(A, B, C, D, ctx, NULL) == 0 ? -1 : 0;
+                        break;
+                    case    1:
+                        ret = BN_mod_exp_mont(A, B, C, D, ctx, NULL) == 0 ? -1 : 0;
+                        break;
+                    case    2:
+                        ret = BN_mod_exp(A, B, C, D, ctx) == 0 ? -1 : 0;
+                        break;
+                    case    3:
+                        ret = BN_mod_exp_simple(A, B, C, D, ctx) == 0 ? -1 : 0;
+                        break;
+                    default:
+                        /* Should't happen */
+                        abort();
+                        break;
                 }
-            } else
-                ret = -1;
+            }
             break;
         case    BN_FUZZ_OP_LSHIFT:
             ret = BN_lshift(A, B, 1) == 0 ? -1 : 0;
