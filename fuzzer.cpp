@@ -147,7 +147,7 @@ extern "C" int LLVMFuzzerInitialize(int *argc, char ***argv)
     if ( g_no_negative == true ) {
         g_runner->SetNegative(false);
     }
-    if ( g_no_compare == true ) {
+    if ( modules.size() < 2 || g_no_compare == true ) {
         g_runner->SetCompare(false);
     }
     if ( g_swapswapop == true ) {
