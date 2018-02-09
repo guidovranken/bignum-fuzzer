@@ -31,9 +31,14 @@ bool Runner::run(void) {
 
     operation_t l_operation;
     while ( input->extract(&l_operation, sizeof(l_operation)) == true ) {
-        if ( operation != 0 ) {
-            l_operation = (operation_t)operation;
+        if ( swapswapop == true && loops < 2 ) {
+            l_operation = BN_FUZZ_OP_SWAP;
+        } else {
+            if ( operation != 0 ) {
+                l_operation = (operation_t)operation;
+            }
         }
+
         loops++;
         uint8_t opt;
         if ( input->extract(&opt, sizeof(opt)) != true ) {
@@ -66,7 +71,7 @@ bool Runner::run(void) {
         multi->swap_bignum(swap_a, swap_b);
 #endif
 
-        if ( loops == 2 ) {
+        if ( num_loops != 0 && loops == num_loops ) {
             break;
         }
     }
@@ -93,9 +98,16 @@ void Runner::SetNegative(const bool setnegative) {
 void Runner::SetCompare(const bool setcompare) {
     compare = setcompare;
 }
+
+void Runner::SetSwapSwapOp(const bool setswapswapop) {
+    swapswapop = setswapswapop;
+}
 void Runner::SetNumberLength(const size_t _num_len) {
     num_len = _num_len;
 }
 void Runner::SetOperation(const size_t _operation) {
     operation = _operation;
+}
+void Runner::SetNumLoops(const size_t _num_loops) {
+    num_loops = _num_loops;
 }

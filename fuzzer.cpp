@@ -5,10 +5,11 @@
 
 #include "declare_modules.h"
 
-bool g_logging, g_no_negative, g_no_compare, g_all_operations;
+bool g_logging, g_no_negative, g_no_compare, g_all_operations, g_swapswapop;
 
 size_t num_len;
 size_t operation;
+size_t num_loops;
 
 static void print_help(void)
 {
@@ -22,7 +23,9 @@ static void print_help(void)
     printf("\t--no_compare : disable differential fuzzing; don't compare output bignums across modules\n");
     printf("\t--num_len=<n>: input bignum size in number of decimal digits\n");
     printf("\t--operation=<n> : disregard operation encoded in input; run each iteration with this operation\n");
+    printf("\t--num_loops : maximum # of operations to execute\n");
     printf("\t--all_operations : disregard operation encoded in input; run each iteration with all operations\n");
+    printf("\t--swapswapop : swap bignums 2 times, then run operation\n");
     printf("\n");
     exit(0);
 }
@@ -36,8 +39,10 @@ extern "C" int LLVMFuzzerInitialize(int *argc, char ***argv)
     g_no_negative = false;
     g_no_compare = false;
     g_all_operations = false;
+    g_swapswapop = false;
     num_len = 0;
     operation = 0;
+    num_loops = 2;
 
     for (i = 0; i < *argc; i++) {
         if ( !strcmp(_argv[i], "--logging") ) {
@@ -69,8 +74,21 @@ extern "C" int LLVMFuzzerInitialize(int *argc, char ***argv)
             operation = (size_t)l;
 
         }
+        else if ( !strncmp(_argv[i], "--num_loops=", 12) ) {
+            long l;
+            l = strtol(_argv[i]+12, NULL, 10);
+            if ( l < 0 ) {
+                printf("Invalid --num_loops argument\n");
+                print_help();
+            }
+            num_loops = (size_t)l;
+
+        }
         else if ( !strcmp(_argv[i], "--all_operations") ) {
             g_all_operations = true;
+        }
+        else if ( !strcmp(_argv[i], "--swapswapop") ) {
+            g_swapswapop = true;
         }
         else if ( !strcmp(_argv[i], "--help") ) {
             print_help();
@@ -104,8 +122,16 @@ extern "C" int LLVMFuzzerInitialize(int *argc, char ***argv)
     operation = BNFUZZ_FLAG_OPERATION;
 #endif
 
+#ifdef BNFUZZ_FLAG_NUM_LOOPS
+    num_loops = BNFUZZ_FLAG_NUM_LOOPS;
+#endif
+
 #ifdef BNFUZZ_FLAG_ALL_OPERATIONS
     g_all_operations = true;
+#endif
+
+#ifdef BNFUZZ_FLAG_SWAPSWAPOP
+    g_swapswapop = true;
 #endif
 
     return 0;
@@ -124,12 +150,16 @@ static void run_single(const uint8_t *data, size_t size, module_container_t &mod
     if ( g_no_compare == true ) {
         runner->SetCompare(false);
     }
+    if ( g_swapswapop == true ) {
+        runner->SetSwapSwapOp(true);
+    }
     if ( num_len != 0 ) {
         runner->SetNumberLength(num_len);
     }
     if ( _operation != 0 ) {
         runner->SetOperation(_operation);
     }
+    runner->SetNumLoops(num_loops);
     runner->run();
 
     delete runner;
