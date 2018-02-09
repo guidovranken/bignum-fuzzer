@@ -3,8 +3,7 @@
 #include "multi.h"
 class Runner {
     public:
-        Runner(const uint8_t* data, size_t size, module_container_t loadmodules) {
-            input = new Input(data, size);
+        Runner(module_container_t loadmodules) {
             multi = new Multi(loadmodules);
             compare = true;
             swapswapop = false;
@@ -13,10 +12,9 @@ class Runner {
             num_loops = 2;
         }
         ~Runner(void) {
-            delete input;
             delete multi;
         }
-        bool run(void);
+        bool run(Input& input);
         void SetLogging(const bool setlogging);
         void SetNegative(const bool setnegative);
         void SetCompare(const bool setcompare);
@@ -29,6 +27,5 @@ class Runner {
         size_t num_len;
         size_t operation;
         size_t num_loops;
-        Input* input;
         Multi* multi;
 };

@@ -8,13 +8,13 @@
 #include "runner.h"
 #include "multi.h"
 
-bool Runner::run(void) {
+bool Runner::run(Input& input) {
     uint8_t numbers[NUM_BIGNUMS][num_len];
     bool ret = false;
     bool l_compare = true;
     size_t loops = 0;
 
-    if ( input->extract((uint8_t*)numbers, sizeof(numbers)) == false ) {
+    if ( input.extract((uint8_t*)numbers, sizeof(numbers)) == false ) {
         return false;
     }
 
@@ -30,7 +30,7 @@ bool Runner::run(void) {
     }
 
     operation_t l_operation;
-    while ( input->extract(&l_operation, sizeof(l_operation)) == true ) {
+    while ( input.extract(&l_operation, sizeof(l_operation)) == true ) {
         if ( swapswapop == true && loops < 2 ) {
             l_operation = BN_FUZZ_OP_SWAP;
         } else {
@@ -41,7 +41,7 @@ bool Runner::run(void) {
 
         loops++;
         uint8_t opt;
-        if ( input->extract(&opt, sizeof(opt)) != true ) {
+        if ( input.extract(&opt, sizeof(opt)) != true ) {
             break;
         }
 
@@ -58,10 +58,10 @@ bool Runner::run(void) {
 #if 0
         /* Swap two arbitrary bignums */
         uint8_t swap_a, swap_b;
-        if ( input->extract(&swap_a, sizeof(swap_a)) != true ) {
+        if ( input.extract(&swap_a, sizeof(swap_a)) != true ) {
             break;
         }
-        if ( input->extract(&swap_b, sizeof(swap_b)) != true ) {
+        if ( input.extract(&swap_b, sizeof(swap_b)) != true ) {
             break;
         }
 

@@ -6,6 +6,7 @@
 #include "declare_modules.h"
 
 bool g_logging, g_no_negative, g_no_compare, g_all_operations, g_swapswapop;
+Runner* g_runner = NULL;
 
 size_t num_len;
 size_t operation;
@@ -134,49 +135,44 @@ extern "C" int LLVMFuzzerInitialize(int *argc, char ***argv)
     g_swapswapop = true;
 #endif
 
-    return 0;
-}
-
-static void run_single(const uint8_t *data, size_t size, module_container_t &modules, operation_t _operation)
-{
-    Runner* runner = new Runner(data, size, modules);
-
-    if ( g_logging == true ) {
-        runner->SetLogging(true);
-    }
-    if ( g_no_negative == true ) {
-        runner->SetNegative(false);
-    }
-    if ( g_no_compare == true ) {
-        runner->SetCompare(false);
-    }
-    if ( g_swapswapop == true ) {
-        runner->SetSwapSwapOp(true);
-    }
-    if ( num_len != 0 ) {
-        runner->SetNumberLength(num_len);
-    }
-    if ( _operation != 0 ) {
-        runner->SetOperation(_operation);
-    }
-    runner->SetNumLoops(num_loops);
-    runner->run();
-
-    delete runner;
-}
-
-extern "C" int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size)
-{
     module_container_t modules;
 
     #include "push_modules.h"
 
+    g_runner = new Runner(modules);
+
+    if ( g_logging == true ) {
+        g_runner->SetLogging(true);
+    }
+    if ( g_no_negative == true ) {
+        g_runner->SetNegative(false);
+    }
+    if ( g_no_compare == true ) {
+        g_runner->SetCompare(false);
+    }
+    if ( g_swapswapop == true ) {
+        g_runner->SetSwapSwapOp(true);
+    }
+    if ( num_len != 0 ) {
+        g_runner->SetNumberLength(num_len);
+    }
+    g_runner->SetNumLoops(num_loops);
+
+    return 0;
+}
+
+extern "C" int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size)
+{
+    Input input(data, size);
+
     if ( g_all_operations == true ) {
         for (int i = 0; i < BN_FUZZ_OP_LAST; i++) {
-            run_single(data, size, modules, i == 0 ? BN_FUZZ_OP_NOP : (operation_t)i);
+            g_runner->SetOperation(i == 0 ? BN_FUZZ_OP_NOP : (operation_t)i);
+            g_runner->run(input);
         }
     } else {
-        run_single(data, size, modules, operation);
+        g_runner->SetOperation(operation);
+        g_runner->run(input);
     }
 
     return 0;
