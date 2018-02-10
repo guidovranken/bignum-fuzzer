@@ -130,18 +130,18 @@ static int operation(
 
     switch ( operation ) {
         case    BN_FUZZ_OP_ADD:
-            ret = BN_add(A, B, C) == 0 ? -1 : 0;
+            ret = BN_add(A, B, C) != 1 ? -1 : 0;
             break;
         case    BN_FUZZ_OP_SUB:
-            ret = BN_sub(A, B, C) == 0 ? -1 : 0;
+            ret = BN_sub(A, B, C) != 1 ? -1 : 0;
             break;
         case    BN_FUZZ_OP_MUL:
-            ret = BN_mul(A, B, C, ctx) == 0 ? -1 : 0;
+            ret = BN_mul(A, B, C, ctx) != 1 ? -1 : 0;
             break;
         case    BN_FUZZ_OP_DIV:
             if ( BN_cmp(C, zero) != 0 ) {
                 BIGNUM* rem = BN_new();
-                ret = BN_div(A, rem, B, C, ctx) == 0 ? -1 : 0;
+                ret = BN_div(A, rem, B, C, ctx) != 1 ? -1 : 0;
                 if ( ret == 0 ) {
                     ret = BN_cmp(rem, zero) == 0 ? 0 : -1;
                 }
@@ -152,10 +152,10 @@ static int operation(
             break;
         case    BN_FUZZ_OP_MOD:
             if ( opt & 2 ) {
-                ret = BN_mod(A, B, C, ctx) == 0 ? -1 : 0;
+                ret = BN_mod(A, B, C, ctx) != 1 ? -1 : 0;
             } else {
                 /* "BN_mod() corresponds to BN_div() with dv set to NULL" */
-                ret = BN_div(NULL, A, B, C, ctx) == 0 ? -1 : 0;
+                ret = BN_div(NULL, A, B, C, ctx) != 1 ? -1 : 0;
             }
             break;
         case    BN_FUZZ_OP_EXP_MOD:
@@ -165,16 +165,16 @@ static int operation(
 
                 switch ( which ) {
                     case    0:
-                        ret = BN_mod_exp_mont_consttime(A, B, C, D, ctx, NULL) == 0 ? -1 : 0;
+                        ret = BN_mod_exp_mont_consttime(A, B, C, D, ctx, NULL) != 1 ? -1 : 0;
                         break;
                     case    1:
-                        ret = BN_mod_exp_mont(A, B, C, D, ctx, NULL) == 0 ? -1 : 0;
+                        ret = BN_mod_exp_mont(A, B, C, D, ctx, NULL) != 1 ? -1 : 0;
                         break;
                     case    2:
-                        ret = BN_mod_exp(A, B, C, D, ctx) == 0 ? -1 : 0;
+                        ret = BN_mod_exp(A, B, C, D, ctx) != 1 ? -1 : 0;
                         break;
                     case    3:
-                        ret = BN_mod_exp_simple(A, B, C, D, ctx) == 0 ? -1 : 0;
+                        ret = BN_mod_exp_simple(A, B, C, D, ctx) != 1 ? -1 : 0;
                         break;
                     default:
                         /* Should't happen */
@@ -184,13 +184,13 @@ static int operation(
             }
             break;
         case    BN_FUZZ_OP_LSHIFT:
-            ret = BN_lshift(A, B, 1) == 0 ? -1 : 0;
+            ret = BN_lshift(A, B, 1) != 1 ? -1 : 0;
             break;
         case    BN_FUZZ_OP_RSHIFT:
-            ret = BN_rshift(A, B, 1) == 0 ? -1 : 0;
+            ret = BN_rshift(A, B, 1) != 1 ? -1 : 0;
             break;
         case    BN_FUZZ_OP_GCD:
-            ret = BN_gcd(A, B, C, ctx) == 0 ? -1 : 0;
+            ret = BN_gcd(A, B, C, ctx) != 1 ? -1 : 0;
             break;
         case    BN_FUZZ_OP_MOD_ADD:
             {
@@ -199,7 +199,7 @@ static int operation(
 
                 switch ( which ) {
                     case    0:
-                        ret = BN_mod_add(A, B, C, D, ctx) == 0 ? -1 : 0;
+                        ret = BN_mod_add(A, B, C, D, ctx) != 1 ? -1 : 0;
                         break;
                     case    1:
                     /* "... may be used if both a and b are non-negative and less than m" */
@@ -207,7 +207,7 @@ static int operation(
                                 BN_cmp(C, zero) >= 0 &&
                                 BN_cmp(B, D) < 0 &&
                                 BN_cmp(C, D) < 0) {
-                            ret = BN_mod_add_quick(A, B, C, D) == 0 ? -1 : 0;
+                            ret = BN_mod_add_quick(A, B, C, D) != 1 ? -1 : 0;
                         } else {
                             ret = -1;
                         }
@@ -220,7 +220,7 @@ static int operation(
             break;
         case    BN_FUZZ_OP_EXP:
             if ( BN_cmp(B, zero) > 0 && BN_ucmp(B, thousand) <= 0 && BN_cmp(C, zero) > 0 && BN_ucmp(C, thousand) <= 0 ) {
-                ret = BN_exp(A, B, C, ctx) == 0 ? -1 : 0;
+                ret = BN_exp(A, B, C, ctx) != 1 ? -1 : 0;
             } else {
                 ret = -1;
             }
@@ -238,15 +238,15 @@ static int operation(
             ret = 0;
             break;
         case    BN_FUZZ_OP_SQR:
-            ret = BN_sqr(A, B, ctx) == 0 ? -1 : 0;
+            ret = BN_sqr(A, B, ctx) != 1 ? -1 : 0;
             break;
         case    BN_FUZZ_OP_NEG:
-            ret = BN_sub(A, zero, B) == 0 ? -1 : 0;
+            ret = BN_sub(A, zero, B) != 1 ? -1 : 0;
             break;
         case    BN_FUZZ_OP_ABS:
             if ( BN_cmp(B, zero) < 0 ) {
                 if ( opt & 2 ) {
-                    ret = BN_sub(A, zero, B) == 0 ? -1 : 0;
+                    ret = BN_sub(A, zero, B) != 1 ? -1 : 0;
                 } else {
                     /* Another way to invert the sign of B */
                     ret = (BN_sub(A, B, B) != 0 && BN_sub(A, A, B) != 0) ? 0 : -1;
@@ -280,7 +280,7 @@ static int operation(
 
                 switch ( which ) {
                     case    0:
-                        ret = BN_mod_sub(A, B, C, D, ctx) == 0 ? -1 : 0;
+                        ret = BN_mod_sub(A, B, C, D, ctx) != 1 ? -1 : 0;
                         break;
                     case    1:
                         /* "... may be used if both a and b are non-negative and less than m" */
@@ -288,7 +288,7 @@ static int operation(
                                 BN_cmp(C, zero) >= 0 &&
                                 BN_cmp(B, D) < 0 &&
                                 BN_cmp(C, D) < 0) {
-                            ret = BN_mod_sub_quick(A, B, C, D) == 0 ? -1 : 0;
+                            ret = BN_mod_sub_quick(A, B, C, D) != 1 ? -1 : 0;
                         } else {
                             ret = -1;
                         }
@@ -306,20 +306,20 @@ static int operation(
         case BN_FUZZ_OP_MOD_MUL:
             switch ( opt % 3 ) {
                 case    0:
-                    ret = BN_mod_mul(A, B, C, D, ctx) == 0 ? -1 : 0;
+                    ret = BN_mod_mul(A, B, C, D, ctx) != 1 ? -1 : 0;
                     break;
                 case    1:
                     {
                         BN_RECP_CTX *recp = BN_RECP_CTX_new();
                         BN_RECP_CTX_set(recp, D, ctx);
-                        ret = BN_mod_mul_reciprocal(A, B, C, recp, ctx) == 0 ? -1 : 0;
+                        ret = BN_mod_mul_reciprocal(A, B, C, recp, ctx) != 1 ? -1 : 0;
                         BN_RECP_CTX_free(recp);
                     }
                     break;
                 case 2:
                     {
                         BN_MONT_CTX* mont = BN_MONT_CTX_new();
-                        ret = BN_MONT_CTX_set(mont, D, ctx) == 0 ? -1 : 0;
+                        ret = BN_MONT_CTX_set(mont, D, ctx) != 1 ? -1 : 0;
                         if ( ret == 0 ) {
                             BIGNUM *b, *c, *_b, *_c;
                             _b = BN_dup(B);
@@ -330,9 +330,9 @@ static int operation(
                             BN_nnmod(_c, _c, D, ctx);
                             BN_to_montgomery(b, _b, mont, ctx);
                             BN_to_montgomery(c, _c, mont, ctx);
-                            ret = BN_mod_mul_montgomery(A, b, c, mont, ctx) == 0 ? -1 : 0;
+                            ret = BN_mod_mul_montgomery(A, b, c, mont, ctx) != 1 ? -1 : 0;
                             if ( ret == 0 ) {
-                                ret = BN_from_montgomery(A, A, mont, ctx) == 0 ? -1 : 0;
+                                ret = BN_from_montgomery(A, A, mont, ctx) != 1 ? -1 : 0;
                             }
                             BN_free(_b);
                             BN_free(_c);
