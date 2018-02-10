@@ -193,7 +193,30 @@ static int operation(
             ret = BN_gcd(A, B, C, ctx) == 0 ? -1 : 0;
             break;
         case    BN_FUZZ_OP_MOD_ADD:
-            ret = BN_mod_add(A, B, C, D, ctx) == 0 ? -1 : 0;
+            {
+                /* Use first and last bits of opt to construct range [0..3] */
+                const uint8_t which = (opt & 1 ? 1 : 0) + (opt & 128 ? 2 : 0);
+
+                switch ( which ) {
+                    case    0:
+                        ret = BN_mod_add(A, B, C, D, ctx) == 0 ? -1 : 0;
+                        break;
+                    case    1:
+                    /* "... may be used if both a and b are non-negative and less than m" */
+                        if (    BN_cmp(B, zero) >= 0 &&
+                                BN_cmp(C, zero) >= 0 &&
+                                BN_cmp(B, D) < 0 &&
+                                BN_cmp(C, D) < 0) {
+                            ret = BN_mod_add_quick(A, B, C, D) == 0 ? -1 : 0;
+                        } else {
+                            ret = -1;
+                        }
+                        break;
+                    default:
+                        ret = -1;
+                        break;
+                }
+            }
             break;
         case    BN_FUZZ_OP_EXP:
             if ( BN_cmp(B, zero) > 0 && BN_ucmp(B, thousand) <= 0 && BN_cmp(C, zero) > 0 && BN_ucmp(C, thousand) <= 0 ) {
@@ -251,7 +274,30 @@ static int operation(
             }
             break;
         case BN_FUZZ_OP_MOD_SUB:
-            ret = BN_mod_sub(A, B, C, D, ctx) == 0 ? -1 : 0;
+            {
+                /* Use first and last bits of opt to construct range [0..3] */
+                const uint8_t which = (opt & 1 ? 1 : 0) + (opt & 128 ? 2 : 0);
+
+                switch ( which ) {
+                    case    0:
+                        ret = BN_mod_sub(A, B, C, D, ctx) == 0 ? -1 : 0;
+                        break;
+                    case    1:
+                        /* "... may be used if both a and b are non-negative and less than m" */
+                        if (    BN_cmp(B, zero) >= 0 &&
+                                BN_cmp(C, zero) >= 0 &&
+                                BN_cmp(B, D) < 0 &&
+                                BN_cmp(C, D) < 0) {
+                            ret = BN_mod_sub_quick(A, B, C, D) == 0 ? -1 : 0;
+                        } else {
+                            ret = -1;
+                        }
+                        break;
+                    default:
+                        ret = -1;
+                        break;
+                }
+            }
             break;
         case BN_FUZZ_OP_SWAP:
             BN_swap(A, B);
