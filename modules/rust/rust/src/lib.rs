@@ -166,7 +166,8 @@ pub extern fn rust_bignum_operation(op: c_int, _opt: c_int) -> c_int {
         }
         10 => { /* BN_FUZZ_OP_MOD_ADD = 10 */
             if num4 > BigInt::zero() {
-                *(NUM1.lock().unwrap()) = num2.add(num3).rem(num4).clone();
+                let xadd = num2.add(num3);
+                *(NUM1.lock().unwrap()) = xadd.rem(num4.clone()).add(num4.clone()).rem(num4).clone();
                 ret = 0;
             } else {
                 ret = -1
@@ -205,8 +206,8 @@ pub extern fn rust_bignum_operation(op: c_int, _opt: c_int) -> c_int {
         }
         17 => { /* BN_FUZZ_OP_MOD_SUB = 17 */
             if num4 > BigInt::zero() {
-                //*(NUM1.lock().unwrap()) = num3.sub(num2).rem(num4).clone();
-                *(NUM1.lock().unwrap()) = num2.sub(num3).rem(num4).clone();
+                let xsub = num2.sub(num3);
+                *(NUM1.lock().unwrap()) = xsub.rem(num4.clone()).add(num4.clone()).rem(num4).clone();
                 ret = 0;
             } else {
                 ret = -1
