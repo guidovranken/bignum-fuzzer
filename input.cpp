@@ -12,3 +12,8 @@ bool Input::extract(uint8_t* dest, size_t size) {
 
     return true;
 }
+
+void Input::rewind(void) {
+    data = orig_data;
+    datasize = orig_datasize;
+}

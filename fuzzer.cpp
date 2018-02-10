@@ -169,6 +169,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size)
         for (int i = 0; i < BN_FUZZ_OP_LAST; i++) {
             g_runner->SetOperation(i == 0 ? BN_FUZZ_OP_NOP : (operation_t)i);
             g_runner->run(input);
+            input.rewind();
         }
     } else {
         g_runner->SetOperation(operation);
