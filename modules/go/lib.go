@@ -141,11 +141,16 @@ func op_LSHIFT(A int, B int, C int, D int, direct bool) int {
 }
 
 func op_RSHIFT(A int, B int, C int, D int, direct bool) int {
+    g_nums[A].Set(g_nums[B])
+    if g_nums[A].Cmp(big.NewInt(0)) < 0 && g_nums[A].Bit(0) == 1 {
+        g_nums[A].Add(g_nums[A], big.NewInt(1))
+    }
+
     if direct {
-        g_nums[A].Rsh(g_nums[B], 1)
+        g_nums[A].Rsh(g_nums[A], 1)
     } else {
         tmp := big.NewInt(0)
-        tmp.Rsh(g_nums[B], 1)
+        tmp.Rsh(g_nums[A], 1)
         g_nums[A] = tmp
     }
     return 0
