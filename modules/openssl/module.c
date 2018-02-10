@@ -344,6 +344,19 @@ static int operation(
                     break;
             }
             break;
+        case BN_FUZZ_OP_SET_BIT:
+            if ( BN_cmp(B, thousand) <= 0 && BN_cmp(B, zero) >= 0 ) {
+                const char* res = BN_bn2dec(B);
+                if ( res != NULL ) {
+                    long strtol(const char *nptr, char **endptr, int base);
+                    long N = strtol(res, NULL, 10);
+                    if ( N >= 0 ) {
+                        ret = BN_set_bit(A, N) != 1 ? -1 : 0;
+                    }
+                    OPENSSL_free((void*)res);
+                }
+            }
+            break;
         case BN_FUZZ_OP_NOP:
             {
                 ret = 0;
