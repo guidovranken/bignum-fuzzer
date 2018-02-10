@@ -41,7 +41,6 @@ class Multi {
             negative = true;
         }
         ~Multi() {
-            destroy_bignum();
             for ( auto curmod : modules ) {
                 delete curmod;
             }

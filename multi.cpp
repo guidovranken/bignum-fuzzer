@@ -77,6 +77,7 @@ void Multi::destroy_bignum(void) {
     for ( auto curmod : modules ) {
         for (size_t bn_idx = 0; bn_idx < NUM_BIGNUMS; bn_idx++) {
             curmod->mod->destroy_bignum(curmod->getBnIdx(bn_idx));
+            *(curmod->getBnIdxPtr(bn_idx)) = NULL; /* To avoid double-frees */
         }
     }
 }
@@ -184,6 +185,7 @@ void Multi::shutdown(void) {
     for ( auto curmod : modules ) {
         curmod->mod->shutdown();
     }
+    destroy_bignum();
 }
 void Multi::SetLogging(const bool setlogging) {
     logging = setlogging;
