@@ -113,8 +113,10 @@ static int operation(
             *A = gcd(*B, *C);
             break;
         case    BN_FUZZ_OP_MOD_ADD:
-            if ( *D != cpp_int(0) ) {
+            if ( *D > cpp_int(0) ) {
                 add(*A, *B, *C);
+                *A = powm(*A, cpp_int(1), *D);
+                add(*A, *A, *D);
                 *A = powm(*A, cpp_int(1), *D);
             } else {
                 ret = -1;
@@ -154,8 +156,10 @@ static int operation(
             ret = 0;
             break;
         case    BN_FUZZ_OP_MOD_SUB:
-            if ( *D != cpp_int(0) ) {
+            if ( *D > cpp_int(0) ) {
                 subtract(*A, *B, *C);
+                *A = powm(*A, cpp_int(1), *D);
+                add(*A, *A, *D);
                 *A = powm(*A, cpp_int(1), *D);
             } else {
                 ret = -1;
