@@ -80,6 +80,52 @@ static void destroy_bignum(void* bignum)
 
     BN_free(bn);
 }
+
+static void test_BN_mod_sqrt(const BIGNUM *B, const BIGNUM *C)
+{
+    BIGNUM* tmp1 = BN_new();
+    BIGNUM* tmp2 = BN_new();
+
+    if ( BN_cmp(B, zero) < 0 || BN_cmp(C, zero) < 0 ) {
+        goto end;
+    }
+
+    /* C must be prime */
+    if ( BN_is_prime_ex(C, 0, NULL, NULL) != 1 ) {
+        goto end;
+    }
+
+    if ( BN_mod_sqrt(tmp1, B, C, ctx) == NULL ) {
+        goto end;
+    }
+
+    if ( BN_sqr(tmp1, tmp1, ctx) != 1 ) {
+        goto end;
+    }
+
+    if ( BN_mod(tmp1, tmp1, C, ctx) != 1 ) {
+        goto end;
+    }
+
+    if ( BN_copy(tmp2, B) == NULL ) {
+        goto end;
+    }
+
+    if ( BN_mod(tmp2, tmp2, C, ctx) != 1 ) {
+        goto end;
+    }
+
+    /* tmp1 and tmp2 must be the same */
+
+    if ( BN_cmp(tmp1, tmp2) != 0 ) {
+        abort();
+    }
+
+end:
+	BN_free(tmp1);
+	BN_free(tmp2);
+}
+
 static int operation(
         bignum_cluster_t* bignum_cluster,
         operation_t operation,
@@ -409,6 +455,9 @@ static int operation(
                                 BN_MONT_CTX_free(mont);
                             }
                         }
+                        break;
+                    case    2:
+                        test_BN_mod_sqrt(B, C);
                         break;
                     default:
                         break;
