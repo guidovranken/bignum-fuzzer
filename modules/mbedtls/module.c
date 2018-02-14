@@ -174,21 +174,15 @@ static int operation(
             }
             break;
         case    BN_FUZZ_OP_DIV:
-            if ( mbedtls_mpi_cmp_int(C, 0) != 0 ) {
+            {
                 mbedtls_mpi tmp;
                 mbedtls_mpi_init(&tmp);
                 ret = mbedtls_mpi_div_mpi(A, &tmp, B, C) == 0 ? 0 : -1;
-                if ( ret == 0 ) {
-                    ret = mbedtls_mpi_cmp_int(&tmp, 0) == 0 ? 0 : -1;
-                }
                 mbedtls_mpi_free(&tmp);
-            } else {
-                /* Division by zero not supported */
-                ret = -1;
             }
             break;
         case    BN_FUZZ_OP_MOD:
-            if ( mbedtls_mpi_cmp_int(B, 0) >= 0 && mbedtls_mpi_cmp_int(C, 0) > 0 ) {
+            if ( mbedtls_mpi_cmp_int(B, 0) > 0 ) {
                 ret = mbedtls_mpi_mod_mpi(A, B, C) == 0 ? 0 : -1;
             } else {
                 ret = -1;
@@ -263,7 +257,7 @@ static int operation(
             {
                 ret = mbedtls_mpi_add_mpi(A, B, C) == 0 ? 0 : -1;
 
-                if ( ret == 0 && mbedtls_mpi_cmp_int(A, 0) >= 0 && mbedtls_mpi_cmp_int(D, 0) > 0 ) {
+                if ( ret == 0 ) {
                     ret = mbedtls_mpi_mod_mpi(A, A, D) == 0 ? 0 : -1;
                 } else {
                     ret = -1;
@@ -323,7 +317,7 @@ static int operation(
             {
                 ret = mbedtls_mpi_sub_mpi(A, B, C) == 0 ? 0 : -1;
 
-                if ( ret == 0 && mbedtls_mpi_cmp_int(A, 0) >= 0 && mbedtls_mpi_cmp_int(D, 0) > 0 ) {
+                if ( ret == 0 ) {
                     ret = mbedtls_mpi_mod_mpi(A, A, D) == 0 ? 0 : -1;
                 } else {
                     ret = -1;
