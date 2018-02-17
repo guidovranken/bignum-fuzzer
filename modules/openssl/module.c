@@ -409,6 +409,26 @@ static int operation(
                         BN_RECP_CTX_set(recp, D, ctx);
                         ret = BN_mod_mul_reciprocal(A, B, C, recp, ctx) != 1 ? -1 : 0;
                         BN_RECP_CTX_free(recp);
+                        if ( ret == 0 ) {
+                            /* D_abs = abs(D) */
+                            BIGNUM* D_abs = BN_new();
+                            if ( BN_copy(D_abs, D) != NULL ) {
+                                if ( BN_cmp(D, zero) < 0 ) {
+                                    ret = BN_sub(D_abs, zero, D) != 1 ? -1 : 0;
+                                }
+                                if ( ret == 0 ) {
+                                    /* A = A + abs(D) */
+                                    ret = BN_add(A, A, D_abs) != 1 ? -1 : 0;
+                                    if ( ret == 0 ) {
+                                        /* A = A mod abs(D) */
+                                        ret = BN_mod(A, A, D_abs, ctx) != 1 ? -1 : 0;
+                                    }
+                                }
+                                BN_free(D_abs);
+                            } else {
+                                ret = -1;
+                            }
+                        }
                     }
                     break;
                 case 2:
