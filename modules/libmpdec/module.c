@@ -160,7 +160,7 @@ static int operation(
             }
             break;
         case    BN_FUZZ_OP_EXP_MOD:
-            if ( compare(C, g_zero) != 0 )
+            if ( compare(B, g_zero) != 0 && compare(C, g_zero) != 0 )
 			{
                 mpd_t* D_abs = mpd_new(&g_ctx);
 				mpd_qabs(D_abs, D, &g_ctx, &status);
