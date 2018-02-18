@@ -173,9 +173,16 @@ func op_GCD(A int, B int, C int, D int, direct bool) int {
 }
 
 func op_MOD_ADD(A int, B int, C int, D int, direct bool) int {
-    if g_nums[D].Cmp(big.NewInt(0)) > 0 {
-        g_nums[A].Add(g_nums[B], g_nums[C])
-        g_nums[A].Mod(g_nums[A], g_nums[D])
+    if g_nums[D].Cmp(big.NewInt(0)) != 0 {
+        if direct {
+            g_nums[A].Add(g_nums[B], g_nums[C])
+            g_nums[A].Mod(g_nums[A], g_nums[D])
+        } else {
+            tmp := big.NewInt(0)
+            tmp.Add(g_nums[B], g_nums[C])
+            tmp.Mod(tmp, g_nums[D])
+            g_nums[A] = tmp
+        }
         return 0
     } else {
         return -1
@@ -200,8 +207,16 @@ func op_EXP(A int, B int, C int, D int, direct bool) int {
 }
 
 
-func op_CMP(A int, B int, C int, D int, _direct bool) int {
-    res := g_nums[B].Cmp(g_nums[C])
+func op_CMP(A int, B int, C int, D int, direct bool) int {
+    res := 0
+    if direct {
+        res = g_nums[B].Cmp(g_nums[C])
+    } else {
+        tmp := big.NewInt(0)
+        tmp.Set(g_nums[B])
+        res = tmp.Cmp(g_nums[C])
+    }
+
     if res > 0 {
         g_nums[A] = big.NewInt(1)
     } else {
@@ -254,7 +269,13 @@ func op_IS_PRIME(A int, B int, C int, D int, direct bool) int {
     max64 := big.NewInt(0).Lsh( big.NewInt(1), 64 )
     max64.Sub(max64, big.NewInt(1))
     if g_nums[B].Cmp(big.NewInt(0)) > 0 && g_nums[B].Cmp(max64) < 0 {
-        is_prime := g_nums[B].ProbablyPrime(1)
+        is_prime := false
+        if direct {
+            is_prime = g_nums[B].ProbablyPrime(1)
+        } else {
+            tmp := big.NewInt(0).Set(g_nums[B])
+            is_prime = tmp.ProbablyPrime(1)
+        }
         if is_prime {
             g_nums[A] = big.NewInt(1)
         } else {
@@ -267,9 +288,16 @@ func op_IS_PRIME(A int, B int, C int, D int, direct bool) int {
 }
 
 func op_MOD_SUB(A int, B int, C int, D int, direct bool) int {
-    if g_nums[D].Cmp(big.NewInt(0)) > 0 {
-        g_nums[A].Sub(g_nums[B], g_nums[C])
-        g_nums[A].Mod(g_nums[A], g_nums[D])
+    if g_nums[D].Cmp(big.NewInt(0)) != 0 {
+        if direct {
+            g_nums[A].Sub(g_nums[B], g_nums[C])
+            g_nums[A].Mod(g_nums[A], g_nums[D])
+        } else {
+            tmp := big.NewInt(0)
+            tmp.Sub(g_nums[B], g_nums[C])
+            tmp.Mod(tmp, g_nums[D])
+            g_nums[A] = tmp
+        }
         return 0
     } else {
         return -1
@@ -284,9 +312,16 @@ func op_SWAP(A int, B int, C int, D int, direct bool) int {
 }
 
 func op_MOD_MUL(A int, B int, C int, D int, direct bool) int {
-    if g_nums[D].Cmp(big.NewInt(0)) > 0 {
-        g_nums[A].Mul(g_nums[B], g_nums[C])
-        g_nums[A].Mod(g_nums[A], g_nums[D])
+    if g_nums[D].Cmp(big.NewInt(0)) != 0 {
+        if direct {
+            g_nums[A].Mul(g_nums[B], g_nums[C])
+            g_nums[A].Mod(g_nums[A], g_nums[D])
+        } else {
+            tmp := big.NewInt(0)
+            tmp.Mul(g_nums[B], g_nums[C])
+            tmp.Mod(tmp, g_nums[D])
+            g_nums[A] = tmp
+        }
         return 0
     } else {
         return -1
