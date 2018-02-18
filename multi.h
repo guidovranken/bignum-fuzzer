@@ -35,6 +35,7 @@ class Multi {
         Multi(module_container_t loadmodules) {
             for ( auto curmod : loadmodules ) {
                 modules.push_back( new ModuleCtx(curmod) );
+                module_active.push_back( true );
 
             }
             logging = false;
@@ -60,7 +61,8 @@ class Multi {
         bool logging, negative;
         size_t get_num_modules(void);
         std::vector<ModuleCtx*> modules;
+        std::vector<bool> module_active;
         int decimal_strcmp(const char *s1, const char *s2);
-        void log_state(std::vector<std::vector<char*>> strings);
+        void log_state(std::vector<std::pair<size_t, std::vector<char*>>> strings);
 };
 #endif

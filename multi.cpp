@@ -3,11 +3,15 @@
 #include <string.h>
 
 bool Multi::initialize(void) {
+    size_t i = 0;
     for ( auto curmod : modules ) {
         if ( curmod->mod->initialize() != 0 ) {
+            /* TODO consider marking module as inactive rather than failing altogether */
             return false;
         }
         curmod->clearBn();
+        module_active[i] = true;
+        i++;
     }
     return true;
 }
@@ -37,6 +41,7 @@ bool Multi::bignum_from_bin(const uint8_t* data, size_t size, size_t bn_idx) {
 
     for ( auto curmod : modules ) {
         if ( curmod->mod->bignum_from_string(string, curmod->getBnIdxPtr(bn_idx)) != 0 ) {
+            /* TODO consider marking module as inactive rather than failing altogether */
             free(string);
             return false;
         }
@@ -63,14 +68,16 @@ bool Multi::exec_operation(operation_t operation, uint8_t opt) {
     if ( logging ) {
         printf("%s: operation %zu, opt %zu\n", __FUNCTION__, (size_t)operation, (size_t)opt);
     }
-    bool ret = true;
+    size_t module_idx = 0, num_failed = 0;
     for ( auto curmod : modules ) {
         if ( curmod->mod->operation(curmod->bn, operation, opt) != 0 ) {
-            ret = false;
+            num_failed++;
+            module_active[module_idx] = false;
         }
+        module_idx++;
     }
-    
-    return ret;
+
+    return num_failed != modules.size();
 }
 
 void Multi::destroy_bignum(void) {
@@ -82,48 +89,82 @@ void Multi::destroy_bignum(void) {
     }
 }
 
-void Multi::log_state(std::vector< std::vector<char*> > strings) {
-    for (size_t mod_idx = 0; mod_idx < strings.size(); mod_idx++) {
+void Multi::log_state(std::vector< std::pair<size_t, std::vector<char*>> > strings) {
+    /* Represents index in 'strings' parameter */
+    size_t i = 0;
+
+    for ( const auto& curstrings : strings ) {
+        /* curstrings.first is the module index */
+        ModuleCtx* curmod = modules[curstrings.first];
+
         for (size_t bn_idx = 0; bn_idx < NUM_BIGNUMS; bn_idx++) {
-            ModuleCtx* curmod = modules[mod_idx];
-            printf("%s: %s #%zu: %s", __FUNCTION__, curmod->mod->name, bn_idx, strings[mod_idx][bn_idx]);
-            if ( mod_idx && decimal_strcmp(strings[mod_idx][bn_idx], strings[mod_idx-1][bn_idx]) ) {
+
+            printf("%s: %s #%zu: %s", __FUNCTION__, curmod->mod->name, bn_idx, curstrings.second[bn_idx]);
+
+            /* Compare with previous module */
+            if ( i > 0 && decimal_strcmp(strings[i].second[bn_idx], strings[i-1].second[bn_idx]) ) {
                 printf(" (does not match)");
             }
+
             printf("\n");
         }
         printf("\n");
+        i++;
     }
+
     printf("\n");
 }
 
 bool Multi::compare(void) {
-    std::vector< std::vector<char*> > strings;
-    bool ret = true;
+    std::vector< std::pair<size_t, std::vector<char*>> > strings;
+    size_t module_idx = 0;
 
     /* Step 1: convert bignums to decimal string representation */
     for ( auto curmod : modules ) {
+        /* Ignore modules that have been marked inactive during this iteration */
+        if ( module_active[module_idx] == false ) {
+            module_idx++;
+            continue;
+        }
+
         std::vector<char*> curstrings;
+        bool do_continue = false;
         for (size_t bn_idx = 0; bn_idx < NUM_BIGNUMS; bn_idx++) {
             char* res;
+            /* If bignum to string conversion fails, mark this module as inactive,
+             * and refrain from processing the remainder of bignums of this module */
             if ( curmod->mod->string_from_bignum(curmod->getBnIdx(bn_idx), &res) != 0 ) {
-                return false;
+                do_continue = true;
+                module_active[module_idx] = false;
+                break;
             }
             curstrings.push_back(res);
         }
-        strings.push_back(curstrings);
+
+        /* If bignum to string conversion failed, do not compare its bignums */
+        if ( do_continue == true ) {
+            module_idx++;
+            continue;
+        }
+
+        strings.push_back(std::pair<size_t, std::vector<char*>>(module_idx, curstrings));
+        module_idx++;
     }
 
     /* Step 2: compare strings */
-    for (size_t mod_idx = 1; mod_idx < strings.size(); mod_idx++) {
-        auto prevstrings = strings[mod_idx-1];
-        auto curstrings = strings[mod_idx];
+    bool ret = true;
+
+    for (size_t i = 1; i < strings.size(); i++) {
+        auto prevstrings = strings[i-1].second;
+        auto curstrings = strings[i].second;
+
         for (size_t bn_idx = 0; bn_idx < NUM_BIGNUMS; bn_idx++) {
             if ( decimal_strcmp(curstrings[bn_idx], prevstrings[bn_idx]) ) {
                 ret = false;
                 break;
             }
         }
+
         if ( ret == false ) {
             break;
         }
@@ -134,7 +175,7 @@ bool Multi::compare(void) {
     }
 
     for ( auto curstrings : strings ) {
-        for ( auto string : curstrings ) {
+        for ( auto string : curstrings.second ) {
             free(string);
         }
     }
