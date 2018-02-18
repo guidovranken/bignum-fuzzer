@@ -81,6 +81,68 @@ static void destroy_bignum(void* bignum)
     BN_free(bn);
 }
 
+#ifdef TEST_STRUCT_SANITY
+struct bignum_st {
+    BN_ULONG *d;                /* Pointer to an array of 'BN_BITS2' bit
+                                 * chunks. */
+    int top;                    /* Index of last used d +1. */
+    /* The next are internal book keeping for bn_expand. */
+    int dmax;                   /* Size of the d array. */
+    int neg;                    /* one if the number is negative */
+    int flags;
+};
+
+static void test_bignum_sanity(const BIGNUM* bignum)
+{
+    if ( bignum->d != NULL ) {
+        BN_ULONG d = *(bignum->d);
+    }
+    if ( bignum->top < 0 ) abort();
+    if ( bignum->dmax < 0 ) abort();
+    if ( bignum->neg != 0 && bignum->neg != 1 ) abort();
+}
+
+struct bn_mont_ctx_st {
+    int ri;                     /* number of bits in R */
+    BIGNUM RR;                  /* used to convert to montgomery form */
+    BIGNUM N;                   /* The modulus */
+    BIGNUM Ni;                  /* R*(1/R mod N) - N*Ni = 1 (Ni is only
+                                 * stored for bignum algorithm) */
+    BN_ULONG n0[2];             /* least significant word(s) of Ni; (type
+                                 * changed with 0.9.9, was "BN_ULONG n0;"
+                                 * before) */
+    int flags;
+};
+
+static void test_bn_mont_ctx_sanity(const BN_MONT_CTX* bn_mont_ctx)
+{
+    if ( bn_mont_ctx->ri < 0 ) abort();
+    test_bignum_sanity(&(bn_mont_ctx->RR));
+    test_bignum_sanity(&(bn_mont_ctx->N));
+    test_bignum_sanity(&(bn_mont_ctx->Ni));
+}
+
+struct bn_recp_ctx_st {
+    BIGNUM N;                   /* the divisor */
+    BIGNUM Nr;                  /* the reciprocal */
+    int num_bits;
+    int shift;
+    int flags;
+};
+
+static void test_bn_recp_ctx_sanity(const BN_RECP_CTX* bn_recp_ctx)
+{
+    test_bignum_sanity(&(bn_recp_ctx->N));
+    test_bignum_sanity(&(bn_recp_ctx->Nr));
+    if ( bn_recp_ctx->num_bits < 0 ) abort();
+    if ( bn_recp_ctx->shift < 0 ) abort();
+}
+#else /* !TEST_STRUCT_SANITY */
+#define test_bignum_sanity(...)
+#define test_bn_mont_ctx_sanity(...)
+#define test_bn_recp_ctx_sanity(...)
+#endif /* TEST_STRUCT_SANITY */
+
 static void test_bn_sqrx8x_internal(const BIGNUM *B, const BIGNUM *C)
 {
     /* Test for bn_sqrx8x_internal carry bug on x86_64 (CVE-2017-3736) */
@@ -90,9 +152,12 @@ static void test_bn_sqrx8x_internal(const BIGNUM *B, const BIGNUM *C)
         BIGNUM* Bcopy = BN_dup(B);
         if ( BN_MONT_CTX_set(mont, C, ctx) != 0 ) {
             BIGNUM* x = BN_new();
+            test_bn_mont_ctx_sanity(mont);
             if ( BN_mod_mul_montgomery(x, B, B, mont, ctx) != 0 ) {
                 BIGNUM* y = BN_new();
+                test_bn_mont_ctx_sanity(mont);
                 if ( BN_mod_mul_montgomery(y, B, Bcopy, mont, ctx) != 0 ) {
+                    test_bn_mont_ctx_sanity(mont);
                     if ( BN_cmp(x, y) != 0 ) {
                         abort();
                     }
@@ -115,9 +180,12 @@ static void test_rsaz_1024_mul_avx2(const BIGNUM* A, const BIGNUM *B, const BIGN
         BN_MONT_CTX* mont = BN_MONT_CTX_new();
         if ( BN_MONT_CTX_set(mont, C, ctx) != 0 ) {
             BIGNUM* x = BN_new();
+            test_bn_mont_ctx_sanity(mont);
             if ( BN_mod_exp_mont_consttime(x, A, B, C, ctx, mont) != 0 ) {
                 BIGNUM* y = BN_new();
+                test_bn_mont_ctx_sanity(mont);
                 if ( BN_mod_exp_mont(y, A, B, C, ctx, mont) != 0 ) {
+                    test_bn_mont_ctx_sanity(mont);
                     if ( BN_cmp(x, y) != 0 ) {
                         abort();
                     }
@@ -187,6 +255,11 @@ static int operation(
     B = (BIGNUM*)bignum_cluster->BN[1];
     C = (BIGNUM*)bignum_cluster->BN[2];
     D = (BIGNUM*)bignum_cluster->BN[3];
+
+    test_bignum_sanity(A);
+    test_bignum_sanity(B);
+    test_bignum_sanity(C);
+    test_bignum_sanity(D);
 
     bool f_constant_time = opt & 1 ? true : false;
 
@@ -406,8 +479,13 @@ static int operation(
                 case    1:
                     {
                         BN_RECP_CTX *recp = BN_RECP_CTX_new();
+                        test_bn_recp_ctx_sanity(recp);
                         BN_RECP_CTX_set(recp, D, ctx);
+                        test_bn_recp_ctx_sanity(recp);
                         ret = BN_mod_mul_reciprocal(A, B, C, recp, ctx) != 1 ? -1 : 0;
+                        if ( ret == 0 ) {
+                            test_bn_recp_ctx_sanity(recp);
+                        }
                         BN_RECP_CTX_free(recp);
                         if ( ret == 0 ) {
                             /* D_abs = abs(D) */
@@ -437,6 +515,7 @@ static int operation(
                         ret = BN_MONT_CTX_set(mont, D, ctx) != 1 ? -1 : 0;
                         if ( ret == 0 ) {
                             BIGNUM *b, *c, *_b, *_c;
+                            test_bn_mont_ctx_sanity(mont);
                             _b = BN_dup(B);
                             _c = BN_dup(C);
                             b = BN_new();
@@ -444,10 +523,16 @@ static int operation(
                             BN_nnmod(_b, _b, D, ctx);
                             BN_nnmod(_c, _c, D, ctx);
                             BN_to_montgomery(b, _b, mont, ctx);
+                            test_bn_mont_ctx_sanity(mont);
                             BN_to_montgomery(c, _c, mont, ctx);
+                            test_bn_mont_ctx_sanity(mont);
                             ret = BN_mod_mul_montgomery(A, b, c, mont, ctx) != 1 ? -1 : 0;
                             if ( ret == 0 ) {
+                                test_bn_mont_ctx_sanity(mont);
                                 ret = BN_from_montgomery(A, A, mont, ctx) != 1 ? -1 : 0;
+                                if ( ret == 0 ) {
+                                    test_bn_mont_ctx_sanity(mont);
+                                }
                             }
                             BN_free(_b);
                             BN_free(_c);
