@@ -116,7 +116,7 @@ func op_MOD(A int, B int, C int, D int, direct bool) int {
 }
 
 func op_EXP_MOD(A int, B int, C int, D int, direct bool) int {
-    if g_nums[B].Cmp(big.NewInt(0)) > 0 && g_nums[C].Cmp(big.NewInt(0)) >= 0 && g_nums[D].Cmp(big.NewInt(0)) != 0 {
+    if g_nums[B].Cmp(big.NewInt(0)) > 0 && g_nums[C].Cmp(big.NewInt(0)) > 0 && g_nums[D].Cmp(big.NewInt(0)) != 0 {
         if direct {
             g_nums[A].Exp(g_nums[B], g_nums[C], g_nums[D])
         } else {
