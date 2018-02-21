@@ -1,6 +1,6 @@
-#ifdef TEST_STRUCT_SANITY
 #include <openssl/bn.h>
 #include "sanity.h"
+#ifdef TEST_STRUCT_SANITY
 struct bignum_st {
     BN_ULONG *d;                /* Pointer to an array of 'BN_BITS2' bit
                                  * chunks. */
@@ -57,7 +57,7 @@ void test_bn_recp_ctx_sanity(const BN_RECP_CTX* bn_recp_ctx)
     if ( bn_recp_ctx->shift < 0 ) abort();
 }
 #else /* !TEST_STRUCT_SANITY */
-#define test_bignum_sanity(...)
-#define test_bn_mont_ctx_sanity(...)
-#define test_bn_recp_ctx_sanity(...)
+void test_bignum_sanity(const BIGNUM* bignum) { }
+void test_bn_mont_ctx_sanity(const BN_MONT_CTX* bn_mont_ctx) { }
+void test_bn_recp_ctx_sanity(const BN_RECP_CTX* bn_recp_ctx) { }
 #endif /* TEST_STRUCT_SANITY */
