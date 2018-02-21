@@ -434,12 +434,20 @@ static int operation_EXP_MOD(BIGNUM* A, const BIGNUM* B, const BIGNUM* C, const 
 
 static int operation_LSHIFT(BIGNUM* A, const BIGNUM* B, const BIGNUM* C, const BIGNUM* D, const uint8_t opt)
 {
-    return BN_lshift(A, B, 1) != 1 ? -1 : 0;
+    if ( (opt % 2) == 0 ) {
+        return BN_lshift(A, B, 1) != 1 ? -1 : 0;
+    } else {
+        return BN_lshift1(A, B) != 1 ? -1 : 0;
+    }
 }
 
 static int operation_RSHIFT(BIGNUM* A, const BIGNUM* B, const BIGNUM* C, const BIGNUM* D, const uint8_t opt)
 {
-    return BN_rshift(A, B, 1) != 1 ? -1 : 0;
+    if ( (opt % 2) == 0 ) {
+        return BN_rshift(A, B, 1) != 1 ? -1 : 0;
+    } else {
+        return BN_rshift1(A, B) != 1 ? -1 : 0;
+    }
 }
 
 static int operation_GCD(BIGNUM* A, const BIGNUM* B, const BIGNUM* C, const BIGNUM* D, const uint8_t opt)
