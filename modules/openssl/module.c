@@ -368,7 +368,17 @@ static int operation_DIV(BIGNUM* A, const BIGNUM* B, const BIGNUM* C, const BIGN
 
     if ( BN_cmp(C, zero) != 0 ) {
         BIGNUM* rem = BN_new();
-        ret = BN_div(A, rem, B, C, ctx) != 1 ? -1 : 0;
+        BN_RECP_CTX *recp;
+
+        if ( opt % 2 == 0 ) {
+            ret = BN_div(A, rem, B, C, ctx) != 1 ? -1 : 0;
+        } else {
+            recp = BN_RECP_CTX_new();
+            BN_RECP_CTX_set(recp, C, ctx);
+            ret = BN_div_recp(A, rem, B, recp, ctx) != 1 ? -1 : 0;
+            BN_RECP_CTX_free(recp);
+        }
+
         if ( ret == 0 ) {
             ret = BN_cmp(rem, zero) == 0 ? 0 : -1;
         }
