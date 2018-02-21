@@ -4,6 +4,7 @@
 #include <openssl/bn.h>
 #include <openssl/rsa.h>
 #include <openssl/crypto.h>
+#include <openssl/srp.h>
 #include <bnfuzz/module.h>
 #include <bnfuzz/operation.h>
 #include <bnfuzz/bignum.h>
@@ -241,6 +242,109 @@ static void test_BN_mod_sqrt(const BIGNUM *B, const BIGNUM *C)
 end:
 	BN_free(tmp1);
 	BN_free(tmp2);
+}
+
+static void test_SRP(const BIGNUM *A, const BIGNUM *B)
+{
+    BIGNUM *a = NULL;
+    BIGNUM *b = NULL;
+
+    BIGNUM *s = NULL;
+    BIGNUM *v = NULL;
+
+    BIGNUM *Apub = NULL;
+    BIGNUM *Bpub = NULL;
+
+    BIGNUM *Kclient = NULL;
+    BIGNUM *Kserver = NULL;
+
+    BIGNUM *u = NULL;
+    BIGNUM *x = NULL;
+
+    const SRP_gN *GN = NULL;
+
+    int i;
+
+    if ( BN_cmp(A, zero) < 0 || BN_cmp(B, zero) < 0 ) {
+        return;
+    }
+
+    a = BN_dup(A);
+    b = BN_dup(A);
+
+    if ( a == NULL || b == NULL ) {
+        goto end;
+    }
+
+    GN = SRP_get_default_gN("1024");
+    if (GN == NULL) {
+        goto end;
+    }
+
+    if (!SRP_create_verifier_BN("alice", "password", &s, &v, GN->N, GN->g)) {
+        goto end;
+    }
+
+    Bpub = SRP_Calc_B(b, GN->N, GN->g, v);
+    if (!SRP_Verify_B_mod_N(Bpub, GN->N)) {
+        goto end;
+    }
+
+    Apub = SRP_Calc_A(a, GN->N, GN->g);
+    if (!SRP_Verify_A_mod_N(Apub, GN->N)) {
+        goto end;
+    }
+
+    u = SRP_Calc_u(Apub, Bpub, GN->N);
+    x = SRP_Calc_x(s, "alice", "password");
+    Kclient = SRP_Calc_client_key(GN->N, Bpub, GN->g, x, a, u);
+    Kserver = SRP_Calc_server_key(Apub, v, u, b, GN->N);
+
+    if (BN_cmp(Kclient, Kserver) != 0) {
+        abort();
+    }
+
+end:
+    BN_free(Kclient);
+    BN_free(Kserver);
+    BN_free(x);
+    BN_free(u);
+    BN_free(Apub);
+    BN_free(Bpub);
+    BN_free(s);
+    BN_free(v);
+    BN_free(a);
+    BN_free(b);
+}
+
+static void test_BN_mod_inverse(const BIGNUM *B, const BIGNUM *C)
+{
+    BIGNUM* inv = BN_new();
+    BIGNUM* one = BN_new();
+    BN_set_word(one, 1);
+
+    /* TODO evaluate whether negative numbers are OK,
+     * and remove the following restriction if so. */
+    if ( BN_cmp(B, zero) < 0 || BN_cmp(C, zero) == 0 ) {
+        goto end;
+    }
+    if ( BN_mod_inverse(inv, B, C, ctx) == NULL ) {
+        goto end;
+    }
+    if ( BN_mul(inv, inv, B, ctx) != 1 ) {
+        goto end;
+    }
+    if ( BN_mod(inv, inv, C, ctx) != 1 ) {
+        goto end;
+    }
+    if ( BN_cmp(C, one) != 0) {
+        if ( BN_cmp(inv, one) != 0 ) {
+            abort();
+        }
+    }
+end:
+    BN_free(inv);
+    BN_free(one);
 }
 
 static int operation_ADD(BIGNUM* A, const BIGNUM* B, const BIGNUM* C, const BIGNUM* D, const uint8_t opt)
@@ -584,6 +688,12 @@ static int operation_NOP(BIGNUM* A, const BIGNUM* B, const BIGNUM* C, const BIGN
             break;
         case    2:
             test_BN_mod_sqrt(B, C);
+            break;
+        case    3:
+            test_SRP(B, C);
+            break;
+        case    4:
+            test_BN_mod_inverse(B, C);
             break;
         default:
             break;
