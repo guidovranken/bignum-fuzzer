@@ -190,3 +190,15 @@ In the summary below, the symbols A, B, C and D represent the first, second, thi
 ## BN_FUZZ_OP_IS_PRIME
 - ```if B is a prime number then A = 1```
 - ```if B is not a prime number then A = 0```
+## BN_FUZZ_OP_MOD_SUB
+- ```A = (B - C) MOD D```
+## BN_FUZZ_OP_SWAP
+- ```TMP = A```
+- ```A = B```
+- ```B = TMP```
+## BN_FUZZ_OP_MOD_MUL
+- ```A = (B * C) MOD D```
+## BN_FUZZ_OP_SET_BIT
+- ```A |= 1 << B```
+## BN_FUZZ_OP_NOP
+- This operation is free to do whatever it wants, but it must not alter any bignums
