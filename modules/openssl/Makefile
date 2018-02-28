@@ -18,4 +18,4 @@ tests.o : tests.c
 	test $(OPENSSL_INCLUDE_PATH)
 	$(CC) $(CFLAGS) -I $(OPENSSL_INCLUDE_PATH) -fPIC -c tests.c -o tests.o
 clean:
-	rm -rf module.o module.a
+	rm -rf module.o operations.o sanity.o tests.o module.a
