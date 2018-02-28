@@ -23,10 +23,6 @@ pub extern fn rust_bignum_initialize() {
 
 #[no_mangle]
 pub extern fn rust_bignum_bignum_from_string(s: *const c_char, bn_index: c_int) {
-    //let base = BigInt::from_str_radix("0", 10).unwrap();
-    //base.from_str_radix("0", 10).unwrap();
-    //NUM1.from_str_radix("56666666666666666666", 10).unwrap()
-    //NUM1.lock().unwrap().from_str_radix("56666666666666666666", 10)
     let s2 = unsafe {
         CStr::from_ptr(s).to_str().unwrap()
     };
@@ -219,7 +215,7 @@ pub extern fn rust_bignum_operation(op: c_int, _opt: c_int) -> c_int {
             *(NUM2.lock().unwrap()) = tmp;
             ret = 0;
         }
-        19 => { /* BN_FUZZ_OP_MOD_SUB = 19 */
+        19 => { /* BN_FUZZ_OP_MOD_MUL = 19 */
             if num4 > BigInt::zero() {
                 *(NUM1.lock().unwrap()) = num2.mul(num3).rem(num4).clone();
                 ret = 0;
