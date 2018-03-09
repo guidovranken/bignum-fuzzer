@@ -185,7 +185,7 @@ int operation_ABS(BIGNUM* A, const BIGNUM* B, const BIGNUM* C, const BIGNUM* D, 
     int ret = -1;
 
     if ( BN_cmp(B, zero) < 0 ) {
-        if ( opt & 2 ) {
+        if ( opt & 1 ) {
             ret = BN_sub(A, zero, B) != 1 ? -1 : 0;
         } else {
             /* Another way to invert the sign of B */
