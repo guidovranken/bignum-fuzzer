@@ -174,7 +174,7 @@ static int operation(
             }
             break;
         case    BN_FUZZ_OP_MOD_MUL:
-            if ( *D != cpp_int(0) ) {
+            if ( *B > cpp_int(0) && *C > cpp_int(0) && *D > cpp_int(0) ) {
                 multiply(*A, *B, *C);
                 *A = powm(*A, cpp_int(1), *D);
             } else {
