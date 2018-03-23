@@ -1,5 +1,6 @@
 #include <openssl/bn.h>
 #include <openssl/srp.h>
+#include <openssl/rsa.h>
 #include "tests.h"
 #include "sanity.h"
 
@@ -207,4 +208,38 @@ void test_BN_mod_inverse(const BIGNUM *B, const BIGNUM *C)
 end:
     BN_free(inv);
     BN_free(one);
+}
+
+void test_RSA_public_encrypt(const BIGNUM *B, const BIGNUM *C, const BIGNUM *D)
+{
+    RSA* rsa = NULL;
+    BIGNUM *n = NULL, *e = NULL;
+    unsigned char *plaintext = NULL, *ciphertext = NULL;
+    int plaintext_len = 0, ciphertext_len = 0, encrypted_len = 0;
+
+    rsa = RSA_new();
+
+    ciphertext_len = BN_num_bytes(B);
+    ciphertext = malloc(ciphertext_len);
+
+    plaintext = malloc(BN_num_bytes(D));
+    plaintext_len = BN_bn2bin(D, plaintext);
+
+    n = BN_new();
+    e = BN_new();
+    BN_copy(n, B);
+    BN_copy(e, C);
+    RSA_set0_key(rsa, n, e, NULL);
+
+    encrypted_len = RSA_public_encrypt(plaintext_len, plaintext, ciphertext, rsa, RSA_PKCS1_PADDING);
+    if ( encrypted_len > ciphertext_len ) {
+        /* This implies a buffer overflow of 'ciphertext'.
+         * Abort in case AddressSanitizer is not enabled.
+         */
+        abort();
+    }
+
+    free(plaintext);
+    free(ciphertext);
+    RSA_free(rsa);
 }

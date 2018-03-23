@@ -372,6 +372,9 @@ int operation_NOP(BIGNUM* A, const BIGNUM* B, const BIGNUM* C, const BIGNUM* D, 
         case    4:
             test_BN_mod_inverse(B, C);
             break;
+        case    5:
+            test_RSA_public_encrypt(B, C, D);
+            break;
         default:
             break;
     }
