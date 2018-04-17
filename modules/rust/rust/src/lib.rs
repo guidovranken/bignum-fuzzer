@@ -137,12 +137,19 @@ pub extern fn rust_bignum_operation(op: c_int, _opt: c_int) -> c_int {
             }
         }
         6 => { /* BN_FUZZ_OP_EXP_MOD = 6 */
+            /* Currently disabled due to using too much memory if AddressSanitizer
+             * is enabled.
+            */
+
+            /*
             if num2 > BigInt::zero() && num3 >= BigInt::zero() && num4 > BigInt::zero() {
                 *(NUM1.lock().unwrap()) = modexp(num2, num3, num4);
                 ret = 0;
             } else {
                 ret = -1
             }
+            */
+            ret = -1;
         }
         7 => { /* BN_FUZZ_OP_LSHIFT = 7 */
             *(NUM1.lock().unwrap()) = num2.shl(1).clone();
