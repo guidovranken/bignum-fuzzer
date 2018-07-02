@@ -30,6 +30,10 @@ do
         echo "extern module_t mod_libmpdec;" >>declare_modules.h
         echo "modules.push_back(&mod_libmpdec);" >>push_modules.h
         echo -n "modules/libmpdec/module.a " >>link.sh
+    elif [ $var = "libgmp" ]; then
+        echo "extern module_t mod_libgmp;" >>declare_modules.h
+        echo "modules.push_back(&mod_libgmp);" >>push_modules.h
+        echo -n "modules/libgmp/module.a " >>link.sh
     else
         echo "Unknown module $var"; rm -rf declare_modules.h push_modules.h link.sh; exit
     fi
