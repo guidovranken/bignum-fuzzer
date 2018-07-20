@@ -112,6 +112,8 @@ static int operation(
             C = D;
         }
     }
+
+#ifndef BIGNUM_FUZZER_BORINGSSL
     if ( opt & 8 ) {
         BN_set_flags(A, BN_FLG_CONSTTIME);
     } else {
@@ -135,6 +137,7 @@ static int operation(
     } else {
         BN_set_flags(D, 0);
     }
+#endif
 
     switch ( operation ) {
         case    BN_FUZZ_OP_ADD:
@@ -229,5 +232,9 @@ module_t mod_openssl = {
     .destroy_bignum = destroy_bignum,
     .operation = operation,
     .shutdown = shutdown,
+#ifndef BIGNUM_FUZZER_BORINGSSL
     .name = "OpenSSL"
+#else
+    .name = "BoringSSL"
+#endif
 };

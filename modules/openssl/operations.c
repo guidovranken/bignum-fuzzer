@@ -1,5 +1,6 @@
 #include <openssl/bn.h>
 #include <stdint.h>
+#include <stdlib.h>
 #include "tests.h"
 #include "sanity.h"
 
@@ -27,15 +28,19 @@ int operation_DIV(BIGNUM* A, const BIGNUM* B, const BIGNUM* C, const BIGNUM* D, 
 
     if ( BN_cmp(C, zero) != 0 ) {
         BIGNUM* rem = BN_new();
+#ifndef BIGNUM_FUZZER_BORINGSSL
         BN_RECP_CTX *recp;
+#endif
 
         if ( opt % 2 == 0 ) {
             ret = BN_div(A, rem, B, C, ctx) != 1 ? -1 : 0;
         } else {
+#ifndef BIGNUM_FUZZER_BORINGSSL
             recp = BN_RECP_CTX_new();
             BN_RECP_CTX_set(recp, C, ctx);
             ret = BN_div_recp(A, rem, B, recp, ctx) != 1 ? -1 : 0;
             BN_RECP_CTX_free(recp);
+#endif
         }
 
         if ( ret == 0 ) {
@@ -80,7 +85,9 @@ int operation_EXP_MOD(BIGNUM* A, const BIGNUM* B, const BIGNUM* C, const BIGNUM*
             ret = BN_mod_exp(A, B, C, D, ctx) != 1 ? -1 : 0;
             break;
         case    3:
+#ifndef BIGNUM_FUZZER_BORINGSSL
             ret = BN_mod_exp_simple(A, B, C, D, ctx) != 1 ? -1 : 0;
+#endif
             break;
         default:
             /* Should't happen */
@@ -252,8 +259,12 @@ int operation_MOD_SUB(BIGNUM* A, const BIGNUM* B, const BIGNUM* C, const BIGNUM*
 
 int operation_SWAP(BIGNUM* A, BIGNUM* B, const BIGNUM* C, const BIGNUM* D, const uint8_t opt)
 {
+#ifndef BIGNUM_FUZZER_BORINGSSL
     BN_swap(A, B);
     return 0;
+#else
+    return -1;
+#endif
 }
 
 int operation_MOD_MUL(BIGNUM* A, const BIGNUM* B, const BIGNUM* C, const BIGNUM* D, const uint8_t opt)
@@ -266,6 +277,7 @@ int operation_MOD_MUL(BIGNUM* A, const BIGNUM* B, const BIGNUM* C, const BIGNUM*
             ret = BN_mod_mul(A, B, C, D, ctx) != 1 ? -1 : 0;
             break;
         case    1:
+#ifndef BIGNUM_FUZZER_BORINGSSL
             {
                 BN_RECP_CTX *recp = BN_RECP_CTX_new();
                 test_bn_recp_ctx_sanity(recp);
@@ -297,6 +309,7 @@ int operation_MOD_MUL(BIGNUM* A, const BIGNUM* B, const BIGNUM* C, const BIGNUM*
                     }
                 }
             }
+#endif
             break;
         case 2:
             {
@@ -339,6 +352,7 @@ int operation_MOD_MUL(BIGNUM* A, const BIGNUM* B, const BIGNUM* C, const BIGNUM*
 int operation_SET_BIT(BIGNUM* A, const BIGNUM* B, const BIGNUM* C, const BIGNUM* D, const uint8_t opt)
 {
     int ret = -1;
+#ifndef BIGNUM_FUZZER_BORINGSSL
     if ( BN_cmp(B, thousand) <= 0 && BN_cmp(B, zero) >= 0 ) {
         const char* res = BN_bn2dec(B);
         if ( res != NULL ) {
@@ -351,6 +365,7 @@ int operation_SET_BIT(BIGNUM* A, const BIGNUM* B, const BIGNUM* C, const BIGNUM*
         }
     }
 
+#endif
     return ret;
 }
 
@@ -364,7 +379,10 @@ int operation_NOP(BIGNUM* A, const BIGNUM* B, const BIGNUM* C, const BIGNUM* D, 
             test_rsaz_1024_mul_avx2(A, B, C);
             break;
         case    2:
+#ifndef BIGNUM_FUZZER_BORINGSSL
+            /* Takes very long with BoringSSL */
             test_BN_mod_sqrt(B, C);
+#endif
             break;
         case    3:
             test_SRP(B, C);

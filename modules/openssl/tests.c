@@ -1,6 +1,9 @@
 #include <openssl/bn.h>
+#ifndef BIGNUM_FUZZER_BORINGSSL
 #include <openssl/srp.h>
+#endif
 #include <openssl/rsa.h>
+#include <stdlib.h>
 #include "tests.h"
 #include "sanity.h"
 
@@ -109,6 +112,7 @@ end:
 
 void test_SRP(const BIGNUM *A, const BIGNUM *B)
 {
+#ifndef BIGNUM_FUZZER_BORINGSSL
     BIGNUM *a = NULL;
     BIGNUM *b = NULL;
 
@@ -178,6 +182,7 @@ end:
     BN_free(v);
     BN_free(a);
     BN_free(b);
+#endif
 }
 
 void test_BN_mod_inverse(const BIGNUM *B, const BIGNUM *C)

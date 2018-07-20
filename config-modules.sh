@@ -6,7 +6,7 @@ echo -n "\$CXX \$CXXFLAGS fuzzer.o multi.o runner.o input.o \$LIBFUZZER_LINK " >
 
 for var in "$@"
 do
-    if [ $var == "openssl" ]; then
+    if [ $var == "openssl" ] || [ $var == "boringssl" ]; then
         echo "extern module_t mod_openssl;" >>declare_modules.h
         echo "modules.push_back(&mod_openssl);" >>push_modules.h
         echo -n "modules/openssl/module.a -ldl " >>link.sh
