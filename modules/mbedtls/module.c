@@ -266,7 +266,28 @@ static int operation(
             break;
         case    BN_FUZZ_OP_EXP:
             if ( mbedtls_mpi_cmp_int(B, 0) > 0 && mbedtls_mpi_cmp_int(B, 1000) <= 0 && mbedtls_mpi_cmp_int(C, 0) > 0 && mbedtls_mpi_cmp_int(C, 1000) <= 0 ) {
-                ret = -1; /* TODO */
+                int error, i = mpi_to_int(C, &error);
+                if ( error ) {
+                    ret = -1;
+                } else {
+                    ret = mbedtls_mpi_copy(A, B);
+                    if ( ret == 0 ) {
+                        int error;
+                        const int exponent = mpi_to_int(C, &error) - 1;
+                        if ( error ) {
+                            ret = -1;
+                        } else {
+                            /* Perform manual exponentation by multiplying B * B (C-1) times
+                             * with an ordinary loop */
+                            for (int j = 0; j < exponent; j++) {
+                                ret = mbedtls_mpi_mul_mpi(A, A, B) == 0 ? 0 : -1;
+                                if ( ret != 0 ) {
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                }
             } else {
                 ret = -1;
             }
