@@ -161,9 +161,9 @@ static int operation(
             break;
         case    BN_FUZZ_OP_EXP_MOD:
             if ( compare(B, g_zero) != 0 && compare(C, g_zero) != 0 )
-			{
+            {
                 mpd_t* D_abs = mpd_new(&g_ctx);
-				mpd_qabs(D_abs, D, &g_ctx, &status);
+                mpd_qabs(D_abs, D, &g_ctx, &status);
                 ret = status == 0 ? 0 : -1;
                 if ( ret == 0 ) {
                     mpd_qpowmod(A, B, C, D_abs, &g_ctx, &status);
@@ -173,7 +173,7 @@ static int operation(
                     }
                 }
                 mpd_del(D_abs);
-			}
+            }
             break;
         case    BN_FUZZ_OP_LSHIFT:
             /* TODO */
