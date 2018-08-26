@@ -74,6 +74,11 @@ int operation_EXP_MOD(BIGNUM* A, const BIGNUM* B, const BIGNUM* C, const BIGNUM*
     const uint8_t which = (opt & 1 ? 1 : 0) + (opt & 128 ? 2 : 0);
     int ret = -1;
 
+    if ( BN_cmp(B, D) == 0 ) {
+        /* Workaround for OpenSSL bug */
+        return ret;
+    }
+
     switch ( which ) {
         case    0:
             ret = BN_mod_exp_mont_consttime(A, B, C, D, ctx, NULL) != 1 ? -1 : 0;
