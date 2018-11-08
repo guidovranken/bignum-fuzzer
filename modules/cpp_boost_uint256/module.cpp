@@ -189,8 +189,14 @@ static int operation(
                 break;
             case    BN_FUZZ_OP_MOD_MUL:
                 if ( *B > uint256_t(0) && *C > uint256_t(0) && *D > uint256_t(0) ) {
-                    multiply(*A, *B, *C);
-                    *A = powm(*A, uint256_t(1), *D);
+                    cpp_int a_cpp_int;
+                    cpp_int b_cpp_int(*B);
+                    cpp_int c_cpp_int(*C);
+                    cpp_int d_cpp_int(*D);
+
+                    multiply(a_cpp_int, b_cpp_int, c_cpp_int);
+                    a_cpp_int = powm(a_cpp_int, cpp_int(1), d_cpp_int);
+                    *A = uint256_t(a_cpp_int);
                 } else {
                     ret = -1;
                 }
