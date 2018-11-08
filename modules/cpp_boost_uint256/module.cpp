@@ -201,6 +201,15 @@ static int operation(
                     ret = -1;
                 }
                 break;
+            case    BN_FUZZ_OP_OR:
+                *A = *B | *C;
+                break;
+            case    BN_FUZZ_OP_AND:
+                *A = *B & *C;
+                break;
+            case    BN_FUZZ_OP_XOR:
+                *A = *B & *C;
+                break;
             default:
                 ret = -1;
         }

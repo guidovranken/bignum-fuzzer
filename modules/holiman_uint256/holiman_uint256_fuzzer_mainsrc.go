@@ -29,6 +29,9 @@ const (
     BN_FUZZ_OP_SWAP = 18
     BN_FUZZ_OP_MOD_MUL = 19
     BN_FUZZ_OP_SET_BIT = 20
+    BN_FUZZ_OP_OR = 20
+    BN_FUZZ_OP_AND = 21
+    BN_FUZZ_OP_XOR = 22
 )
 
 var g_nums = make([]*target.Int, 4)
@@ -322,6 +325,42 @@ func op_SET_BIT(A int, B int, C int, D int, direct bool) int {
     return -1
 }
 
+func op_OR(A int, B int, C int, D int, direct bool) int {
+    if direct {
+        g_nums[A].Or(g_nums[B], g_nums[C])
+    } else {
+        tmp := target.NewInt()
+        tmp.Or(g_nums[B], g_nums[C])
+        g_nums[A] = tmp
+    }
+
+    return 0
+}
+
+func op_AND(A int, B int, C int, D int, direct bool) int {
+    if direct {
+        g_nums[A].And(g_nums[B], g_nums[C])
+    } else {
+        tmp := target.NewInt()
+        tmp.And(g_nums[B], g_nums[C])
+        g_nums[A] = tmp
+    }
+
+    return 0
+}
+
+func op_XOR(A int, B int, C int, D int, direct bool) int {
+    if direct {
+        g_nums[A].Xor(g_nums[B], g_nums[C])
+    } else {
+        tmp := target.NewInt()
+        tmp.Xor(g_nums[B], g_nums[C])
+        g_nums[A] = tmp
+    }
+
+    return 0
+}
+
 //export HolimanUint256BignumOperation
 func HolimanUint256BignumOperation(op int, A int, B int, C int, D int, opt int) int {
     direct := false
@@ -345,7 +384,10 @@ func HolimanUint256BignumOperation(op int, A int, B int, C int, D int, opt int) 
     op == BN_FUZZ_OP_MOD_SUB { return op_MOD_SUB(A, B, C, D, direct) } else if
     op == BN_FUZZ_OP_SWAP { return op_SWAP(A, B, C, D, direct) } else if
     op == BN_FUZZ_OP_MOD_MUL { return op_MOD_MUL(A, B, C, D, direct) } else if
-    op == BN_FUZZ_OP_SET_BIT { return op_SET_BIT(A, B, C, D, direct) }
+    op == BN_FUZZ_OP_SET_BIT { return op_SET_BIT(A, B, C, D, direct) } else if
+    op == BN_FUZZ_OP_OR { return op_OR(A, B, C, D, direct) } else if
+    op == BN_FUZZ_OP_AND { return op_AND(A, B, C, D, direct) } else if
+    op == BN_FUZZ_OP_XOR { return op_XOR(A, B, C, D, direct) }
 
     return -1
 }

@@ -26,6 +26,9 @@ enum operation
     BN_FUZZ_OP_SWAP = 18,
     BN_FUZZ_OP_MOD_MUL = 19,
     BN_FUZZ_OP_SET_BIT = 20,
+    BN_FUZZ_OP_OR = 21,
+    BN_FUZZ_OP_AND = 22,
+    BN_FUZZ_OP_XOR = 23,
     BN_FUZZ_OP_LAST = 21,
     BN_FUZZ_OP_NOP = 255,
 };
