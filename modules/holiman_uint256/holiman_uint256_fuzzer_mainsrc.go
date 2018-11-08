@@ -187,11 +187,19 @@ func op_EXP(A int, B int, C int, D int, direct bool) int {
     thousand := target.NewInt().SetUint64(1000)
     if g_nums[B].Cmp(target.NewInt()) > 0 && g_nums[B].Cmp(thousand) < 0 && g_nums[C].Cmp(target.NewInt()) > 0 && g_nums[C].Cmp(thousand) < 0 {
         if direct {
+            /* saveB is required to reset B to its original value,
+               because B is altered by Exp.
+               Hence, remove this once this bug is fixed
+            */
+            saveB := target.NewInt().Copy(g_nums[B])
             g_nums[A].Exp(g_nums[B], g_nums[C])
+            g_nums[B] = saveB
             return 0
         } else {
             tmp := target.NewInt()
+            saveB := target.NewInt().Copy(g_nums[B])
             tmp.Exp(g_nums[B], g_nums[C])
+            g_nums[B] = saveB
             g_nums[A] = tmp
             return 0
         }
