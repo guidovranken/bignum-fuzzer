@@ -42,6 +42,10 @@ do
         echo "extern module_t mod_cpp_boost_uint256;" >>declare_modules.h
         echo "modules.push_back(&mod_cpp_boost_uint256);" >>push_modules.h
         echo -n "modules/cpp_boost_uint256/module.a " >>link.sh
+    elif [ $var = "trezor_crypto" ]; then
+        echo "extern module_t mod_trezor_crypto;" >>declare_modules.h
+        echo "modules.push_back(&mod_trezor_crypto);" >>push_modules.h
+        echo -n "modules/trezor_crypto/module.a " >>link.sh
     else
         echo "Unknown module $var"; rm -rf declare_modules.h push_modules.h link.sh; exit
     fi
