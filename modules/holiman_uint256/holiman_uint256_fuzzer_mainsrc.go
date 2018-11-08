@@ -289,12 +289,10 @@ func op_SWAP(A int, B int, C int, D int, direct bool) int {
 func op_MOD_MUL(A int, B int, C int, D int, direct bool) int {
     if g_nums[D].Cmp(target.NewInt()) != 0 {
         if direct {
-            g_nums[A].Mul(g_nums[B], g_nums[C])
-            g_nums[A].Mod(g_nums[A], g_nums[D])
+            g_nums[A].MulMod(g_nums[B], g_nums[C], g_nums[D])
         } else {
             tmp := target.NewInt()
-            tmp.Mul(g_nums[B], g_nums[C])
-            tmp.Mod(tmp, g_nums[D])
+            tmp.MulMod(g_nums[B], g_nums[C], g_nums[D])
             g_nums[A] = tmp
         }
         return 0
