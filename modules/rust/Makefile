@@ -1,7 +1,7 @@
 CFLAGS+=-I../../include
 all: module.a
 librust_bignum_fuzzer.a:
-	cd rust; cargo rustc --release -- -Cpasses=sancov -Cllvm-args="-sanitizer-coverage-level=3 -sanitizer-coverage-trace-pc-guard -sanitizer-coverage-trace-compares=1 -sanitizer-coverage-trace-geps=1 -sanitizer-coverage-trace-divs=1" --crate-type=staticlib  --target x86_64-unknown-linux-gnu
+	cd rust; cargo rustc --release -- -Cpasses=sancov -Cllvm-args="-sanitizer-coverage-trace-pc-guard -sanitizer-coverage-trace-compares=1 -sanitizer-coverage-trace-geps=1 -sanitizer-coverage-trace-divs=1" --crate-type=staticlib  --target x86_64-unknown-linux-gnu
 	cp rust/target/release/deps/librust_bignum_fuzzer*.a librust_bignum_fuzzer.a
 module.a: module.o librust_bignum_fuzzer.a
 	bash ../link.sh module.a librust_bignum_fuzzer.a
