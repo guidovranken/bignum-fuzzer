@@ -1,9 +1,7 @@
-#![feature(libc)]
 #[macro_use]
 extern crate lazy_static;
-extern crate libc;
 extern crate num;
-use libc::{c_int, c_char};
+use std::os::raw::{c_char, c_int};
 use num::{Num, BigInt, Zero, One, Integer, pow};
 use std::sync::Mutex;
 use std::ffi::CStr;
