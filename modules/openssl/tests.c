@@ -74,6 +74,10 @@ void test_BN_mod_sqrt(const BIGNUM *B, const BIGNUM *C)
         goto end;
     }
 
+    if ( BN_num_bits(B) > 512 || BN_num_bits(C) > 512 ) {
+        goto end;
+    }
+
     /* C must be prime */
     if ( BN_is_prime_ex(C, 0, NULL, NULL) != 1 ) {
         goto end;
