@@ -116,7 +116,7 @@ end:
 
 void test_SRP(const BIGNUM *A, const BIGNUM *B)
 {
-#ifndef BIGNUM_FUZZER_BORINGSSL
+#if !defined(BIGNUM_FUZZER_BORINGSSL) && !defined(BIGNUM_FUZZER_LIBRESSL)
     BIGNUM *a = NULL;
     BIGNUM *b = NULL;
 
