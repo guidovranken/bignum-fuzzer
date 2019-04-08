@@ -114,7 +114,7 @@ int operation_LSHIFT(BIGNUM* A, const BIGNUM* B, const BIGNUM* C, const BIGNUM* 
 
 int operation_RSHIFT(BIGNUM* A, const BIGNUM* B, const BIGNUM* C, const BIGNUM* D, const uint8_t opt)
 {
-#if defined(BIGNUM_FUZZER_LIBRESSL)
+#if defined(BIGNUM_FUZZER_LIBRESSL) || defined(BIGNUM_FUZZER_OPENSSL_102)
     if ( BN_cmp(A, zero) < 0 || BN_cmp(B, zero) < 0 ) {
         return -1;
     }

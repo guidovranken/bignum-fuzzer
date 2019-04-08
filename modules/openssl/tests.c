@@ -221,6 +221,7 @@ end:
 
 void test_RSA_public_encrypt(const BIGNUM *B, const BIGNUM *C, const BIGNUM *D)
 {
+#if !defined(BIGNUM_FUZZER_OPENSSL_102)
     RSA* rsa = NULL;
     BIGNUM *n = NULL, *e = NULL;
     unsigned char *plaintext = NULL, *ciphertext = NULL;
@@ -251,4 +252,5 @@ void test_RSA_public_encrypt(const BIGNUM *B, const BIGNUM *C, const BIGNUM *D)
     free(plaintext);
     free(ciphertext);
     RSA_free(rsa);
+#endif
 }
